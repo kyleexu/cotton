@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国薪资方案计算器</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 12px 8px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        th:first-child {
+            text-align: center;
+            border-radius: 8px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        td {
+            padding: 10px 8px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+
+        td:first-child {
+            text-align: center;
+            font-weight: 500;
+            color: #667eea;
+        }
+
+        tr:hover {
+            background: #f8f9ff;
+        }
+
+        tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+
+        tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 20px;
+        }
+
+        .summary-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-item.highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .summary-label-tip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            text-decoration: underline dotted;
+            text-underline-offset: 2px;
+        }
+
+        .summary-label-tip::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: 50%;
+            top: calc(100% + 8px);
+            transform: translateX(-50%) translateY(-4px);
+            z-index: 20;
+            min-width: 220px;
+            max-width: 300px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #fff;
+            background: rgba(44, 62, 80, 0.95);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            white-space: normal;
+        }
+
+        .summary-label-tip:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .summary-item.highlight .summary-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .summary-item.highlight .summary-value {
+            color: #fff;
+        }
+
+        .bonus-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .bonus-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .bonus-value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* 输入表单样式 */
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group input:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .input-group select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #fff;
+        }
+
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper label {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .base-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-wrapper {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* 表格容器，支持横向滚动 */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1000px) {
+            .input-section {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bonus-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .summary-value {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 输入参数 -->
+        <div class="card">
+            <div class="input-section">
+                <div class="input-group">
+                    <label>城市</label>
+                    <select id="city" onchange="onCityChange()">
+                        <option value="35811">北京 (最高 35,811)</option>
+                        <option value="44265">深圳 (最高 44,265)</option>
+                        <option value="39828">广州 (最高 39,828)</option>
+                        <option value="37302">上海 (最高 37,302)</option>
+                        <option value="25105">武汉 (最高 25,105)</option>
+                        <option value="31378">成都 (最高 31,378)</option>
+                        <option value="40694">杭州 (最高 40,694)</option>
+                        <option value="41400">南京 (最高 41,400)</option>
+                        <option value="30540">合肥 (最高 30,540)</option>
+                        <option value="27861">天津 (最高 27,861)</option>
+                        <option value="29362">重庆 (最高 29,362)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>月薪（元）</label>
+                    <input type="number" id="monthlySalary" value="50000" step="1000" onchange="onSalaryChange()">
+                </div>
+                <div class="input-group">
+                    <label>专项附加扣除（元/月）</label>
+                    <input type="number" id="specialDeduction" value="2000" step="100">
+                </div>
+                <div class="input-group">
+                    <label>年终奖（月数）</label>
+                    <input type="number" id="bonusMonths" value="3" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>年终奖计税方式</label>
+                    <select id="bonusTaxMethod">
+                        <option value="separate" selected>独立计税</option>
+                        <option value="combined">合并计税</option>
+                    </select>
+                    <div class="base-info">独立计税税负较低，2027年后取消</div>
+                </div>
+                <div class="input-group">
+                    <label>社保基数（元）</label>
+                    <input type="number" id="socialBase" value="35811" step="100">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="socialBaseSameAsSalary" checked onchange="onSocialBaseCheckChange()">
+                        <label for="socialBaseSameAsSalary">与薪资一致</label>
+                    </div>
+                    <div class="base-info" id="socialBaseInfo">最高基数: 35,811</div>
+                </div>
+                <div class="input-group">
+                    <label>公积金基数（元）</label>
+                    <input type="number" id="gjjBase" value="35811" step="100">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="gjjBaseSameAsSalary" checked onchange="onGjjBaseCheckChange()">
+                        <label for="gjjBaseSameAsSalary">与薪资一致</label>
+                    </div>
+                    <div class="base-info" id="gjjBaseInfo">最高基数: 35,811</div>
+                </div>
+                <div class="input-group">
+                    <label>公积金比例（%）</label>
+                    <input type="number" id="gjjRate" value="12" min="5" max="12" step="1">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="gjjRateUseMax" checked onchange="onGjjRateCheckChange()">
+                        <label for="gjjRateUseMax">默认最高</label>
+                    </div>
+                    <div class="base-info">最高比例: 12%</div>
+                </div>
+            </div>
+            <div class="btn-wrapper">
+                <button class="calculate-btn" onclick="calculate()">计算</button>
+            </div>
+        </div>
+
+        <!-- 月度明细 -->
+        <div class="card">
+            <h2>月度明细</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>月份</th>
+                            <th>税前工资</th>
+                            <th>五险(个人)</th>
+                            <th>公积金(个人)</th>
+                            <th>五险(企业)</th>
+                            <th>公积金(企业)</th>
+                            <th>企业成本</th>
+                            <th>应税所得</th>
+                            <th>累计应税</th>
+                            <th>当月个税</th>
+                            <th>个人到手</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthlyTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 年终奖计税 -->
+        <div class="card" id="bonusCard" style="display:none;">
+            <h2 id="bonusCardTitle">年终奖独立计税（元）</h2>
+            <div class="bonus-section" id="bonusSection">
+                <div class="bonus-grid">
+                    <div>
+                        <div class="bonus-label" id="bonusLabel">年终奖（3.0个月）</div>
+                        <div class="bonus-value" id="bonusAmount">0</div>
+                    </div>
+                    <div>
+                        <div class="bonus-label" id="bonusTaxLabel">年终奖个税</div>
+                        <div class="bonus-value" id="bonusTax">0</div>
+                    </div>
+                    <div>
+                        <div class="bonus-label">年终奖到手</div>
+                        <div class="bonus-value" id="bonusNet">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 年度汇总 -->
+        <div class="card">
+            <h2>年度汇总（元）</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">企业用人成本</div>
+                    <div class="summary-value" id="companyCost">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">工资个税</div>
+                    <div class="summary-value" id="salaryTax">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">个税总额</div>
+                    <div class="summary-value" id="totalTax">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">公积金总额</div>
+                    <div class="summary-value" id="totalGjj">0</div>
+                </div>
+                <div class="summary-item highlight">
+                    <div class="summary-label">个人到手总额</div>
+                    <div class="summary-value" id="totalNet">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">
+                        <span class="summary-label-tip" data-tip="个税总额/个人到手总额">税率</span>
+                    </div>
+                    <div class="summary-value" id="taxRate">0.00%</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">
+                        <span class="summary-label-tip" data-tip="个税总额/（公积金总额+个人到手总额）">真实税率</span>
+                    </div>
+                    <div class="summary-value" id="realTaxRate">0.00%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 配置常量 ==========
+        const CONFIG = {
+            // 社保比例
+            PENSION_RATE_PERSONAL: 0.08,
+            PENSION_RATE_COMPANY: 0.16,
+            MEDICAL_RATE_PERSONAL: 0.02,
+            MEDICAL_RATE_COMPANY: 0.095,
+            MEDICAL_EXTRA: 3,
+            UNEMPLOYMENT_RATE_PERSONAL: 0.005,
+            UNEMPLOYMENT_RATE_COMPANY: 0.005,
+            INJURY_RATE_COMPANY: 0.004,
+            MATERNITY_RATE_COMPANY: 0.008,
+
+            // 个税
+            TAX_THRESHOLD: 5000,
+
+            // 税率表 [下限, 上限, 税率, 速算扣除数]
+            TAX_BRACKETS: [
+                [0, 36000, 0.03, 0],
+                [36000, 144000, 0.10, 2520],
+                [144000, 300000, 0.20, 16920],
+                [300000, 420000, 0.25, 31920],
+                [420000, 660000, 0.30, 52920],
+                [660000, 960000, 0.35, 85920],
+                [960000, Infinity, 0.45, 181920]
+            ]
+        };
+
+        const MONTH_NAMES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+
+        // ========== 工具函数 ==========
+        function formatNumber(num) {
+            return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatInteger(num) {
+            return num.toLocaleString('zh-CN');
+        }
+
+        function formatPercent(rate) {
+            return (rate * 100).toFixed(2) + '%';
+        }
+
+        // ========== 获取当前最大基数 ==========
+        function getMaxBase() {
+            return parseFloat(document.getElementById('city').value) || 35811;
+        }
+
+        // ========== 城市切换处理 ==========
+        function onCityChange() {
+            const maxBase = getMaxBase();
+            document.getElementById('socialBaseInfo').textContent = `最高基数: ${formatInteger(maxBase)}`;
+            document.getElementById('gjjBaseInfo').textContent = `最高基数: ${formatInteger(maxBase)}`;
+            onSalaryChange();
+        }
+
+        // ========== 薪资变化处理 ==========
+        function onSalaryChange() {
+            updateSocialBase();
+            updateGjjBase();
+        }
+
+        // ========== 社保基数checkbox处理 ==========
+        function onSocialBaseCheckChange() {
+            updateSocialBase();
+        }
+
+        // ========== 公积金基数checkbox处理 ==========
+        function onGjjBaseCheckChange() {
+            updateGjjBase();
+        }
+
+        // ========== 公积金比例checkbox处理 ==========
+        function onGjjRateCheckChange() {
+            updateGjjRate();
+        }
+
+        // ========== 更新公积金比例 ==========
+        function updateGjjRate() {
+            const checkbox = document.getElementById('gjjRateUseMax');
+            const input = document.getElementById('gjjRate');
+
+            if (checkbox.checked) {
+                input.value = 12;
+                input.disabled = true;
+            } else {
+                input.disabled = false;
+                // 手动填写时也不能超过12
+                let currentValue = parseInt(input.value) || 12;
+                if (currentValue > 12) currentValue = 12;
+                if (currentValue < 5) currentValue = 5;
+                input.value = currentValue;
+            }
+        }
+
+        // ========== 获取公积金比例 ==========
+        function getGjjRate() {
+            let rate = parseInt(document.getElementById('gjjRate').value) || 12;
+            if (rate > 12) rate = 12;
+            if (rate < 5) rate = 5;
+            return rate / 100;
+        }
+
+        // ========== 更新社保基数 ==========
+        function updateSocialBase() {
+            const checkbox = document.getElementById('socialBaseSameAsSalary');
+            const input = document.getElementById('socialBase');
+            const salary = parseFloat(document.getElementById('monthlySalary').value) || 0;
+            const maxBase = getMaxBase();
+
+            if (checkbox.checked) {
+                const actualBase = Math.min(salary, maxBase);
+                input.value = actualBase;
+                input.disabled = true;
+            } else {
+                // 手动填写时也不能超过最高值
+                const currentValue = parseFloat(input.value) || 0;
+                if (currentValue > maxBase) {
+                    input.value = maxBase;
+                }
+                input.disabled = false;
+            }
+        }
+
+        // ========== 更新公积金基数 ==========
+        function updateGjjBase() {
+            const checkbox = document.getElementById('gjjBaseSameAsSalary');
+            const input = document.getElementById('gjjBase');
+            const salary = parseFloat(document.getElementById('monthlySalary').value) || 0;
+            const maxBase = getMaxBase();
+
+            if (checkbox.checked) {
+                const actualBase = Math.min(salary, maxBase);
+                input.value = actualBase;
+                input.disabled = true;
+            } else {
+                // 手动填写时也不能超过最高值
+                const currentValue = parseFloat(input.value) || 0;
+                if (currentValue > maxBase) {
+                    input.value = maxBase;
+                }
+                input.disabled = false;
+            }
+        }
+
+        // ========== 计算函数 ==========
+        function getPersonalSocialInsurance(socialBase) {
+            return socialBase * CONFIG.PENSION_RATE_PERSONAL
+                + socialBase * CONFIG.MEDICAL_RATE_PERSONAL + CONFIG.MEDICAL_EXTRA
+                + socialBase * CONFIG.UNEMPLOYMENT_RATE_PERSONAL;
+        }
+
+        function getCompanySocialInsurance(socialBase) {
+            return socialBase * CONFIG.PENSION_RATE_COMPANY
+                + socialBase * CONFIG.MEDICAL_RATE_COMPANY
+                + socialBase * CONFIG.UNEMPLOYMENT_RATE_COMPANY
+                + socialBase * CONFIG.INJURY_RATE_COMPANY
+                + socialBase * CONFIG.MATERNITY_RATE_COMPANY;
+        }
+
+        function getPersonalGjj(gjjBase) {
+            return gjjBase * getGjjRate();
+        }
+
+        function getCompanyGjj(gjjBase) {
+            return gjjBase * getGjjRate();
+        }
+
+        function calculateCumulativeTax(cumulativeIncome) {
+            if (cumulativeIncome <= 0) return 0;
+            for (const bracket of CONFIG.TAX_BRACKETS) {
+                if (cumulativeIncome > bracket[0] && cumulativeIncome <= bracket[1]) {
+                    return cumulativeIncome * bracket[2] - bracket[3];
+                }
+            }
+            return cumulativeIncome * 0.45 - 181920;
+        }
+
+        function calculateBonusTax(bonus) {
+            if (bonus <= 0) return 0;
+            const monthlyBonus = bonus / 12;
+            let rate, quickDeduction;
+
+            if (monthlyBonus <= 3000) { rate = 0.03; quickDeduction = 0; }
+            else if (monthlyBonus <= 12000) { rate = 0.10; quickDeduction = 210; }
+            else if (monthlyBonus <= 25000) { rate = 0.20; quickDeduction = 1410; }
+            else if (monthlyBonus <= 35000) { rate = 0.25; quickDeduction = 2660; }
+            else if (monthlyBonus <= 55000) { rate = 0.30; quickDeduction = 4410; }
+            else if (monthlyBonus <= 80000) { rate = 0.35; quickDeduction = 7160; }
+            else { rate = 0.45; quickDeduction = 15160; }
+
+            return bonus * rate - quickDeduction;
+        }
+
+        // ========== 主计算函数 ==========
+        function calculate() {
+            const monthlySalary = parseFloat(document.getElementById('monthlySalary').value) || 0;
+            const specialDeduction = parseFloat(document.getElementById('specialDeduction').value) || 0;
+            const bonusMonths = parseFloat(document.getElementById('bonusMonths').value) || 0;
+
+            // 获取最大值限制
+            const maxBase = getMaxBase();
+            const maxGjjRate = 12;
+
+            // 获取用户输入的值
+            const socialBaseInput = parseFloat(document.getElementById('socialBase').value) || 0;
+            const gjjBaseInput = parseFloat(document.getElementById('gjjBase').value) || 0;
+            const gjjRateInput = parseInt(document.getElementById('gjjRate').value) || 12;
+
+            // 验证是否超过最大值
+            let errors = [];
+            if (socialBaseInput > maxBase) {
+                errors.push(`社保基数 ${formatInteger(socialBaseInput)} 超过最高限制 ${formatInteger(maxBase)}`);
+            }
+            if (gjjBaseInput > maxBase) {
+                errors.push(`公积金基数 ${formatInteger(gjjBaseInput)} 超过最高限制 ${formatInteger(maxBase)}`);
+            }
+            if (gjjRateInput > maxGjjRate) {
+                errors.push(`公积金比例 ${gjjRateInput}% 超过最高限制 ${maxGjjRate}%`);
+            }
+            if (gjjRateInput < 5) {
+                errors.push(`公积金比例 ${gjjRateInput}% 低于最低限制 5%`);
+            }
+
+            if (errors.length > 0) {
+                alert('输入错误：\n' + errors.join('\n'));
+                return;
+            }
+
+            // 使用验证后的值
+            const socialBase = socialBaseInput;
+            const gjjBase = gjjBaseInput;
+
+            // 月度五险一金
+            const personalSocial = getPersonalSocialInsurance(socialBase);
+            const companySocial = getCompanySocialInsurance(socialBase);
+            const personalGjj = getPersonalGjj(gjjBase);
+            const companyGjj = getCompanyGjj(gjjBase);
+            const totalPersonalDeduction = personalSocial + personalGjj;
+
+            // 月度应税所得
+            const monthlyTaxableIncome = Math.max(0, monthlySalary - totalPersonalDeduction - CONFIG.TAX_THRESHOLD - specialDeduction);
+
+            // 企业月成本
+            const companyCostPerMonth = monthlySalary + companySocial + companyGjj;
+
+            // 生成月度数据
+            let tableHtml = '';
+            let cumulativeTaxableIncome = 0;
+            let previousCumulativeTax = 0;
+            let totalMonthlyTax = 0;
+            let totalNetSalary = 0;
+
+            for (let i = 0; i < 12; i++) {
+                cumulativeTaxableIncome += monthlyTaxableIncome;
+                const cumulativeTax = calculateCumulativeTax(cumulativeTaxableIncome);
+                const monthlyTax = Math.max(0, cumulativeTax - previousCumulativeTax);
+                previousCumulativeTax = cumulativeTax;
+
+                const netSalary = monthlySalary - totalPersonalDeduction - monthlyTax;
+                totalMonthlyTax += monthlyTax;
+                totalNetSalary += netSalary;
+
+                tableHtml += `<tr>
+            <td>${MONTH_NAMES[i]}</td>
+            <td>${formatNumber(monthlySalary)}</td>
+            <td>${formatNumber(personalSocial)}</td>
+            <td>${formatNumber(personalGjj)}</td>
+            <td>${formatNumber(companySocial)}</td>
+            <td>${formatNumber(companyGjj)}</td>
+            <td>${formatNumber(companyCostPerMonth)}</td>
+            <td>${formatNumber(monthlyTaxableIncome)}</td>
+            <td>${formatNumber(cumulativeTaxableIncome)}</td>
+            <td>${formatNumber(monthlyTax)}</td>
+            <td>${formatNumber(netSalary)}</td>
+        </tr>`;
+            }
+
+            document.getElementById('monthlyTable').innerHTML = tableHtml;
+
+            // 年终奖计算
+            const bonusAmount = monthlySalary * bonusMonths;
+            const bonusTaxMethod = document.getElementById('bonusTaxMethod').value;
+            let bonusTax = 0;
+            let bonusNet = 0;
+            let bonusTaxLabel = '年终奖个税';
+            let bonusCardTitle = '年终奖独立计税（元）';
+
+            if (bonusTaxMethod === 'separate') {
+                // 独立计税
+                bonusTax = calculateBonusTax(bonusAmount);
+                bonusNet = bonusAmount - bonusTax;
+                bonusTaxLabel = '年终奖个税（独立）';
+                bonusCardTitle = '年终奖独立计税（元）';
+            } else {
+                // 合并计税：年终奖并入年度综合所得
+                const annualTaxableWithBonus = cumulativeTaxableIncome + bonusAmount;
+                const taxWithBonus = calculateCumulativeTax(annualTaxableWithBonus);
+                const taxWithoutBonus = calculateCumulativeTax(cumulativeTaxableIncome);
+                bonusTax = Math.max(0, taxWithBonus - taxWithoutBonus);
+                bonusNet = bonusAmount - bonusTax;
+                bonusTaxLabel = '年终奖个税（合并）';
+                bonusCardTitle = '年终奖合并计税（元）';
+            }
+
+            if (bonusMonths > 0) {
+                document.getElementById('bonusCard').style.display = 'block';
+                document.getElementById('bonusCardTitle').textContent = bonusCardTitle;
+                document.getElementById('bonusLabel').textContent = `年终奖（${bonusMonths.toFixed(1)}个月）`;
+                document.getElementById('bonusAmount').textContent = formatNumber(bonusAmount);
+                document.getElementById('bonusTaxLabel').textContent = bonusTaxLabel;
+                document.getElementById('bonusTax').textContent = formatNumber(bonusTax);
+                document.getElementById('bonusNet').textContent = formatNumber(bonusNet);
+            } else {
+                document.getElementById('bonusCard').style.display = 'none';
+            }
+
+            // 年度汇总
+            const annualCompanyCost = companyCostPerMonth * 12 + bonusAmount;
+            const annualSalaryTax = totalMonthlyTax;
+            const annualTotalTax = totalMonthlyTax + bonusTax;
+            const annualGjj = (personalGjj + companyGjj) * 12;
+            const annualNetSalary = totalNetSalary + bonusNet;
+            const taxRate = annualNetSalary > 0 ? annualTotalTax / annualNetSalary : 0;
+            const realTaxDenominator = annualGjj + annualNetSalary;
+            const realTaxRate = realTaxDenominator > 0 ? annualTotalTax / realTaxDenominator : 0;
+
+            document.getElementById('companyCost').textContent = formatNumber(annualCompanyCost);
+            document.getElementById('salaryTax').textContent = formatNumber(annualSalaryTax);
+            document.getElementById('totalTax').textContent = formatNumber(annualTotalTax);
+            document.getElementById('totalGjj').textContent = formatNumber(annualGjj);
+            document.getElementById('totalNet').textContent = formatNumber(annualNetSalary);
+            document.getElementById('taxRate').textContent = formatPercent(taxRate);
+            document.getElementById('realTaxRate').textContent = formatPercent(realTaxRate);
+        }
+
+        // 页面加载时初始化
+        window.onload = function () {
+            onSalaryChange();  // 初始化基数
+            updateGjjRate();   // 初始化公积金比例
+            calculate();       // 计算一次
+        };
+    </script>
+</body>
+
+</html>

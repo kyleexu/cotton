@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港薪资方案计算器</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.35);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            padding: 22px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            margin: 0 0 16px 0;
+            color: #2c3e50;
+            border-bottom: 3px solid #4ca1af;
+            padding-bottom: 8px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #4c5661;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #e1e5ea;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4ca1af;
+        }
+
+        .allowance-section {
+            margin-top: 18px;
+            border-top: 1px dashed #d9e0e7;
+            padding-top: 14px;
+        }
+
+        .allowance-title {
+            font-size: 14px;
+            color: #4c5661;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .allowance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px 14px;
+        }
+
+        .allowance-item {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 14px;
+            color: #4c5661;
+            position: relative;
+            cursor: help;
+        }
+
+        .allowance-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+
+        .allowance-item input[type="number"] {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #dbe3ea;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .allowance-item .amount-input {
+            width: 130px;
+        }
+
+        .allowance-item::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: 0;
+            top: calc(100% + 8px);
+            z-index: 10;
+            max-width: 320px;
+            background: rgba(44, 62, 80, 0.95);
+            color: #fff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 12px;
+            line-height: 1.4;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            white-space: normal;
+        }
+
+        .allowance-item:hover::after {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .base-info {
+            font-size: 12px;
+            color: #8a94a1;
+            margin-top: 6px;
+        }
+
+        .btn-wrapper {
+            text-align: center;
+            margin-top: 14px;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 34px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: right;
+            border-bottom: 1px solid #eef1f4;
+        }
+
+        th {
+            background: #f4f7fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        th:first-child,
+        td:first-child {
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .summary-item {
+            background: #f6f8fb;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .summary-item.highlight {
+            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+            color: #fff;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #5f6b78;
+        }
+
+        .summary-item.highlight .summary-label {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .summary-value {
+            font-size: 23px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .summary-item.highlight .summary-value {
+            color: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .input-section,
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 12px;
+            }
+
+            .input-section,
+            .summary-grid,
+            .allowance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>香港薪资方案计算器</h1>
+
+        <div class="card">
+            <h2>输入参数（按港币 HKD）</h2>
+            <div class="input-section">
+                <div class="input-group">
+                    <label>月薪（HKD）</label>
+                    <input type="number" id="monthlySalary" value="50000" step="1000">
+                </div>
+                <div class="input-group">
+                    <label>年终奖（月数）</label>
+                    <input type="number" id="bonusMonths" value="1" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>强积金（MPF）比例（员工）</label>
+                    <input type="number" id="mpfRate" value="5" min="0" max="5" step="0.1">
+                    <div class="base-info">法定上限通常为 5%</div>
+                </div>
+                <div class="input-group">
+                    <label>其他可扣税额（全年）</label>
+                    <input type="number" id="extraDeductions" value="0" step="1000">
+                </div>
+            </div>
+            <div class="allowance-section">
+                <div class="allowance-title">常见免税额度（勾选）</div>
+                <div class="allowance-grid">
+                    <label class="allowance-item" data-tip="每位纳税人通常可享有基本免税额；页面默认勾选用于快速估算。">
+                        <input type="checkbox" id="allowanceBasic" checked onchange="onAllowanceTypeChange('basic')">
+                        基本免税额（145,000）
+                    </label>
+                    <label class="allowance-item" data-tip="已婚且与配偶共同处理税务时可考虑该项；具体适用条件以税局规则为准。">
+                        <input type="checkbox" id="allowanceMarried" onchange="onAllowanceTypeChange('married')">
+                        已婚人士免税额（290,000）
+                    </label>
+                    <label class="allowance-item" data-tip="按符合资格的子女人数估算；每名子女按 130,000 计入免税额。">
+                        <input type="checkbox" id="allowanceChild">
+                        子女免税额（每名 120,000），人数
+                        <input type="number" id="childCount" value="0" min="0" max="10" step="1">
+                    </label>
+                    <label class="allowance-item" data-tip="按符合资格的受养父母/祖父母人数估算；每名按 50,000 计入免税额。">
+                        <input type="checkbox" id="allowanceDependentParent">
+                        供养父母/祖父母（每名 50,000），人数
+                        <input type="number" id="dependentParentCount" value="0" min="0" max="10" step="1">
+                    </label>
+                    <label class="allowance-item" data-tip="教育学费按输入金额估算，年度扣除上限 100,000。">
+                        <input type="checkbox" id="allowanceEducation">
+                        教育学费，金额
+                        <input class="amount-input" type="number" id="educationAmount" value="0" min="0" step="1000">
+                    </label>
+                    <label class="allowance-item" data-tip="住房贷款利息按输入金额估算，年度扣除上限 100,000。">
+                        <input type="checkbox" id="allowanceMortgageInterest">
+                        住房贷款利息，金额
+                        <input class="amount-input" type="number" id="mortgageInterestAmount" value="0" min="0" step="1000">
+                    </label>
+                </div>
+                <div class="base-info">注：基本免税额与已婚人士免税额只能二选一；强制性公积金（MPF）雇员部分会在计算中自动计入（上限 18,000）；其余额度用于快速估算，实际税务请以税务局最新评税年度规则为准。</div>
+            </div>
+            <div class="btn-wrapper">
+                <button class="calculate-btn" onclick="calculate()">计算</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>月度明细（估算）</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>月份</th>
+                        <th>税前工资</th>
+                        <th>员工 MPF</th>
+                        <th>雇主 MPF</th>
+                        <th>月到手（未扣薪俸税）</th>
+                    </tr>
+                </thead>
+                <tbody id="monthlyTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>年度汇总</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">全年税前总收入</div>
+                    <div class="summary-value" id="annualGross">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">员工 MPF（全年）</div>
+                    <div class="summary-value" id="annualEmployeeMpf">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">免税总额（全年）</div>
+                    <div class="summary-value" id="annualAllowance">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">应缴薪俸税（全年）</div>
+                    <div class="summary-value" id="annualTax">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">标准税率税额（15%）</div>
+                    <div class="summary-value" id="standardTax">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">累进税率税额</div>
+                    <div class="summary-value" id="progressiveTax">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">最终采用方式</div>
+                    <div class="summary-value" id="taxMethod" style="font-size: 18px;">-</div>
+                </div>
+                <div class="summary-item highlight">
+                    <div class="summary-label">税后到手（全年）</div>
+                    <div class="summary-value" id="annualNet">0</div>
+                </div>
+            </div>
+            <div class="base-info" style="margin-top: 12px;">
+                说明：此页面用于快速测算。薪俸税采用「标准税率（15%）」与「累进税率」两者取低；累进税率以净应课税入息（扣除已勾选免税额）计算。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MONTH_NAMES = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+
+        const HK_TAX_CONFIG = {
+            STANDARD_RATE: 0.15,
+            MPF_RELEVANT_INCOME_CAP_MONTHLY: 30000,
+            ALLOWANCE_BASIC: 145000,
+            ALLOWANCE_MARRIED: 290000,
+            ALLOWANCE_CHILD_EACH: 120000,
+            ALLOWANCE_DEPENDENT_PARENT_EACH: 50000,
+            MANDATORY_MPF_CAP_YEARLY: 18000,
+            EDUCATION_CAP_YEARLY: 100000,
+            MORTGAGE_INTEREST_CAP_YEARLY: 100000,
+            PROGRESSIVE_BRACKETS: [
+                [50000, 0.02],
+                [50000, 0.06],
+                [50000, 0.10],
+                [50000, 0.14],
+                [Infinity, 0.17]
+            ]
+        };
+
+        function formatMoney(num) {
+            return Number(num).toLocaleString("zh-HK", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + " HKD";
+        }
+
+        function formatPercent(num) {
+            return (Number(num) * 100).toFixed(2) + "%";
+        }
+
+        function clamp(value, min, max) {
+            return Math.min(Math.max(value, min), max);
+        }
+
+        function calculateMonthlyMpf(monthlySalary, mpfRate) {
+            const relevantIncome = Math.min(monthlySalary, HK_TAX_CONFIG.MPF_RELEVANT_INCOME_CAP_MONTHLY);
+            return relevantIncome * mpfRate;
+        }
+
+        function calculateProgressiveTax(netChargeableIncome) {
+            if (netChargeableIncome <= 0) return 0;
+            let remaining = netChargeableIncome;
+            let tax = 0;
+
+            for (const [bandAmount, rate] of HK_TAX_CONFIG.PROGRESSIVE_BRACKETS) {
+                if (remaining <= 0) break;
+                const taxableInBand = Math.min(remaining, bandAmount);
+                tax += taxableInBand * rate;
+                remaining -= taxableInBand;
+            }
+            return tax;
+        }
+
+        function toNonNegativeInt(value) {
+            return Math.max(0, Math.floor(Number(value) || 0));
+        }
+
+        function toNonNegativeNumber(value) {
+            return Math.max(0, Number(value) || 0);
+        }
+
+        function onAllowanceTypeChange(changedType) {
+            const basic = document.getElementById("allowanceBasic");
+            const married = document.getElementById("allowanceMarried");
+
+            if (changedType === "basic" && basic.checked) {
+                married.checked = false;
+            }
+            if (changedType === "married" && married.checked) {
+                basic.checked = false;
+            }
+        }
+
+        function calculateSelectedAllowances(employeeMpfAnnual, annualGross) {
+            let useBasic = document.getElementById("allowanceBasic").checked;
+            const useMarried = document.getElementById("allowanceMarried").checked;
+            const useChild = document.getElementById("allowanceChild").checked;
+            const useDependentParent = document.getElementById("allowanceDependentParent").checked;
+            const useEducation = document.getElementById("allowanceEducation").checked;
+            const useMortgageInterest = document.getElementById("allowanceMortgageInterest").checked;
+
+            // 兜底：异常状态下若同时勾选，仅保留已婚人士免税额
+            if (useBasic && useMarried) {
+                useBasic = false;
+            }
+
+            const childCount = toNonNegativeInt(document.getElementById("childCount").value);
+            const dependentParentCount = toNonNegativeInt(document.getElementById("dependentParentCount").value);
+            const educationAmount = toNonNegativeNumber(document.getElementById("educationAmount").value);
+            const mortgageInterestAmount = toNonNegativeNumber(document.getElementById("mortgageInterestAmount").value);
+
+            let totalAllowance = 0;
+            if (useBasic) totalAllowance += HK_TAX_CONFIG.ALLOWANCE_BASIC;
+            if (useMarried) totalAllowance += HK_TAX_CONFIG.ALLOWANCE_MARRIED;
+            if (useChild) totalAllowance += childCount * HK_TAX_CONFIG.ALLOWANCE_CHILD_EACH;
+            if (useDependentParent) totalAllowance += dependentParentCount * HK_TAX_CONFIG.ALLOWANCE_DEPENDENT_PARENT_EACH;
+            totalAllowance += Math.min(employeeMpfAnnual, HK_TAX_CONFIG.MANDATORY_MPF_CAP_YEARLY);
+            if (useEducation) totalAllowance += Math.min(educationAmount, HK_TAX_CONFIG.EDUCATION_CAP_YEARLY);
+            if (useMortgageInterest) totalAllowance += Math.min(mortgageInterestAmount, HK_TAX_CONFIG.MORTGAGE_INTEREST_CAP_YEARLY);
+            return totalAllowance;
+        }
+
+        function calculate() {
+            const monthlySalary = parseFloat(document.getElementById("monthlySalary").value) || 0;
+            const bonusMonths = parseFloat(document.getElementById("bonusMonths").value) || 0;
+            const extraDeductions = parseFloat(document.getElementById("extraDeductions").value) || 0;
+            const mpfRateInput = parseFloat(document.getElementById("mpfRate").value) || 0;
+            const mpfRate = clamp(mpfRateInput, 0, 5) / 100;
+
+            if (mpfRateInput < 0 || mpfRateInput > 5) {
+                alert("MPF 比例请填写 0 到 5 之间。");
+                return;
+            }
+
+            const annualSalary = monthlySalary * 12;
+            const bonusAmount = monthlySalary * bonusMonths;
+            const annualGross = annualSalary + bonusAmount;
+
+            const employeeMpfMonthly = calculateMonthlyMpf(monthlySalary, mpfRate);
+            const employerMpfMonthly = calculateMonthlyMpf(monthlySalary, 0.05);
+            const employeeMpfAnnual = employeeMpfMonthly * 12;
+            const selectedAllowances = calculateSelectedAllowances(employeeMpfAnnual, annualGross);
+
+            const netIncome = annualGross - extraDeductions;
+            const netChargeableIncome = Math.max(0, netIncome - selectedAllowances);
+
+            const standardRateTax = Math.max(0, netIncome * HK_TAX_CONFIG.STANDARD_RATE);
+            const progressiveTax = calculateProgressiveTax(netChargeableIncome);
+            const annualTax = Math.min(standardRateTax, progressiveTax);
+            const effectiveRate = netIncome > 0 ? annualTax / netIncome : 0;
+            const taxMethod = annualTax === standardRateTax
+                ? "标准税率（15%）"
+                : `累进税率（${formatPercent(effectiveRate)}）`;
+
+            const monthlyNet = monthlySalary - employeeMpfMonthly;
+            const tableHtml = `
+                <tr>
+                    <td>1-12月</td>
+                    <td>${formatMoney(monthlySalary)}</td>
+                    <td>${formatMoney(employeeMpfMonthly)}</td>
+                    <td>${formatMoney(employerMpfMonthly)}</td>
+                    <td>${formatMoney(monthlyNet)}</td>
+                </tr>
+            `;
+            document.getElementById("monthlyTable").innerHTML = tableHtml;
+
+            const annualNet = annualGross - employeeMpfAnnual - annualTax;
+
+            document.getElementById("annualGross").textContent = formatMoney(annualGross);
+            document.getElementById("annualEmployeeMpf").textContent = formatMoney(employeeMpfAnnual);
+            document.getElementById("standardTax").textContent = formatMoney(standardRateTax);
+            document.getElementById("progressiveTax").textContent = formatMoney(progressiveTax);
+            document.getElementById("annualTax").textContent = formatMoney(annualTax);
+            document.getElementById("annualAllowance").textContent = formatMoney(selectedAllowances);
+            document.getElementById("taxMethod").textContent = taxMethod;
+            document.getElementById("annualNet").textContent = formatMoney(annualNet);
+        }
+
+        window.onload = function () {
+            onAllowanceTypeChange("basic");
+            calculate();
+        };
+    </script>
+</body>
+</html>

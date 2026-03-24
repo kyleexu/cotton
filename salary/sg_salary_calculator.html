@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新加坡薪资方案计算器</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            text-align: center; color: #fff; margin-bottom: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.35);
+        }
+        .card {
+            background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            padding: 22px; margin-bottom: 24px;
+        }
+        h2 {
+            margin: 0 0 16px 0; color: #2c3e50; border-bottom: 3px solid #2c5364; padding-bottom: 8px;
+        }
+        .input-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { font-size: 14px; margin-bottom: 8px; color: #4c5661; font-weight: 500; }
+        .input-group input, .input-group select {
+            padding: 12px; border: 2px solid #e1e5ea; border-radius: 8px; font-size: 15px; background: #fff;
+        }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #2c5364; }
+        .allowance-section { margin-top: 18px; border-top: 1px dashed #d9e0e7; padding-top: 14px; }
+        .allowance-title { font-size: 14px; color: #4c5661; font-weight: 600; margin-bottom: 10px; }
+        .allowance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 14px; }
+        .allowance-item {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; color: #4c5661; position: relative;
+        }
+        .allowance-item input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
+        .allowance-item input[type="number"] {
+            width: 100px; padding: 6px 8px; border: 1px solid #dbe3ea; border-radius: 6px; font-size: 13px;
+        }
+        .allowance-item .amount-input { width: 140px; }
+        .allowance-item::after {
+            content: attr(data-tip); position: absolute; left: 0; top: calc(100% + 8px); z-index: 10; max-width: 360px;
+            background: rgba(44, 62, 80, 0.95); color: #fff; border-radius: 8px; padding: 8px 10px; font-size: 12px;
+            line-height: 1.4; opacity: 0; pointer-events: none; transform: translateY(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease; white-space: normal;
+        }
+        .allowance-item:hover::after { opacity: 1; transform: translateY(0); }
+        .base-info { font-size: 12px; color: #8a94a1; margin-top: 6px; }
+        .btn-wrapper { text-align: center; margin-top: 14px; }
+        .calculate-btn {
+            background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%); color: #fff; border: none; border-radius: 8px;
+            padding: 12px 34px; font-size: 16px; font-weight: 700; cursor: pointer;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px 8px; text-align: right; border-bottom: 1px solid #eef1f4; }
+        th { background: #f4f7fa; color: #2c3e50; font-weight: 600; }
+        th:first-child, td:first-child { text-align: center; }
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .summary-item { background: #f6f8fb; border-radius: 10px; padding: 16px; text-align: center; }
+        .summary-item.highlight { background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%); color: #fff; }
+        .summary-label { font-size: 13px; margin-bottom: 8px; color: #5f6b78; }
+        .summary-item.highlight .summary-label { color: rgba(255,255,255,0.85); }
+        .summary-value { font-size: 22px; font-weight: 700; color: #2c3e50; }
+        .summary-item.highlight .summary-value { color: #fff; }
+        @media (max-width: 900px) {
+            .input-section, .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 560px) {
+            body { padding: 12px; }
+            .input-section, .summary-grid, .allowance-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>新加坡薪资方案计算器</h1>
+
+        <div class="card">
+            <h2>输入参数（按新币 SGD）</h2>
+            <div class="input-section">
+                <div class="input-group">
+                    <label>税务居民身份</label>
+                    <select id="taxResidency">
+                        <option value="resident" selected>税务居民</option>
+                        <option value="nonResident">非税务居民</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>月薪（SGD）</label>
+                    <input type="number" id="monthlySalary" value="8000" step="100">
+                </div>
+                <div class="input-group">
+                    <label>年终奖（月数）</label>
+                    <input type="number" id="bonusMonths" value="1" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>其他可扣减收入（全年）</label>
+                    <input type="number" id="extraDeductions" value="0" step="100">
+                </div>
+            </div>
+
+            <div class="allowance-section">
+                <div class="allowance-title">常见税务减免 / 扣除（勾选）</div>
+                <div class="allowance-grid">
+                    <label class="allowance-item" data-tip="Earned Income Relief：默认按 1,000 估算。">
+                        <input type="checkbox" id="reliefEarnedIncome" checked>
+                        劳务收入减免（Earned Income Relief，1,000）
+                    </label>
+                    <label class="allowance-item" data-tip="Spouse Relief：默认按 2,000 估算。">
+                        <input type="checkbox" id="reliefSpouse">
+                        配偶减免（Spouse Relief，2,000）
+                    </label>
+                    <label class="allowance-item" data-tip="Qualifying Child Relief：每名 4,000。">
+                        <input type="checkbox" id="reliefChild">
+                        子女 Relief（每名 4,000），人数
+                        <input type="number" id="childCount" value="0" min="0" max="10" step="1">
+                    </label>
+                    <label class="allowance-item" data-tip="Parent Relief：按每位 9,000 估算。">
+                        <input type="checkbox" id="reliefParent">
+                        父母 Relief（每位 9,000），人数
+                        <input type="number" id="parentCount" value="0" min="0" max="10" step="1">
+                    </label>
+                    <label class="allowance-item" data-tip="Course Fees Relief：输入金额，上限 5,500。">
+                        <input type="checkbox" id="reliefCourseFees">
+                        课程学费 Relief，金额
+                        <input class="amount-input" type="number" id="courseFeesAmount" value="0" min="0" step="100">
+                    </label>
+                    <label class="allowance-item" data-tip="CPF现金补充（RSTU）按输入估算，上限 8,000。">
+                        <input type="checkbox" id="reliefCpfTopup">
+                        CPF 现金补充（RSTU），金额
+                        <input class="amount-input" type="number" id="cpfTopupAmount" value="0" min="0" step="100">
+                    </label>
+                </div>
+                <div class="base-info">注：雇员 CPF 会自动计入扣减（按普通工资上限估算）；居民 Relief 总额按 80,000 上限截断。请以 IRAS 当年规则为准。</div>
+            </div>
+            <div class="btn-wrapper">
+                <button class="calculate-btn" onclick="calculate()">计算</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>月度明细（估算）</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>月份</th>
+                        <th>税前工资</th>
+                        <th>员工 CPF</th>
+                        <th>雇主 CPF</th>
+                        <th>月到手（未扣所得税）</th>
+                    </tr>
+                </thead>
+                <tbody id="monthlyTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>年度汇总</h2>
+            <div class="summary-grid">
+                <div class="summary-item"><div class="summary-label">全年税前总收入</div><div class="summary-value" id="annualGross">0</div></div>
+                <div class="summary-item"><div class="summary-label">员工 CPF（全年）</div><div class="summary-value" id="annualEmployeeCpf">0</div></div>
+                <div class="summary-item"><div class="summary-label">减免总额（全年）</div><div class="summary-value" id="annualRelief">0</div></div>
+                <div class="summary-item"><div class="summary-label">应缴所得税（全年）</div><div class="summary-value" id="annualTax">0</div></div>
+                <div class="summary-item"><div class="summary-label">平税率税额（15%）</div><div class="summary-value" id="flatTax">0</div></div>
+                <div class="summary-item"><div class="summary-label">累进税率税额</div><div class="summary-value" id="progressiveTax">0</div></div>
+                <div class="summary-item"><div class="summary-label">最终采用方式</div><div class="summary-value" id="taxMethod" style="font-size:18px;">-</div></div>
+                <div class="summary-item highlight"><div class="summary-label">税后到手（全年）</div><div class="summary-value" id="annualNet">0</div></div>
+            </div>
+            <div class="base-info" style="margin-top:12px;">
+                说明：居民按累进税率估算；非居民按「15%平税率」与「累进税率」两者取高。此页面为快速测算。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SG_TAX_CONFIG = {
+            FLAT_RATE_NON_RESIDENT: 0.15,
+            CPF_EMPLOYEE_RATE: 0.20,
+            CPF_EMPLOYER_RATE: 0.17,
+            CPF_OW_CAP_MONTHLY: 6800,
+            RELIEF_EARNED_INCOME: 1000,
+            RELIEF_SPOUSE: 2000,
+            RELIEF_CHILD_EACH: 4000,
+            RELIEF_PARENT_EACH: 9000,
+            RELIEF_COURSE_FEES_CAP: 5500,
+            RELIEF_CPF_TOPUP_CAP: 8000,
+            RELIEF_TOTAL_CAP: 80000,
+            PROGRESSIVE_BRACKETS: [
+                [20000, 0.00],
+                [10000, 0.02],
+                [10000, 0.035],
+                [40000, 0.07],
+                [40000, 0.115],
+                [40000, 0.15],
+                [40000, 0.18],
+                [40000, 0.19],
+                [40000, 0.195],
+                [40000, 0.20],
+                [500000, 0.22],
+                [500000, 0.23],
+                [Infinity, 0.24]
+            ]
+        };
+
+        function formatMoney(num) {
+            return Number(num).toLocaleString("en-SG", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " SGD";
+        }
+        function formatPercent(num) {
+            return (Number(num) * 100).toFixed(2) + "%";
+        }
+        function toNonNegativeInt(v) {
+            return Math.max(0, Math.floor(Number(v) || 0));
+        }
+        function toNonNegativeNumber(v) {
+            return Math.max(0, Number(v) || 0);
+        }
+
+        function calculateMonthlyCpf(monthlySalary, rate) {
+            const base = Math.min(monthlySalary, SG_TAX_CONFIG.CPF_OW_CAP_MONTHLY);
+            return base * rate;
+        }
+
+        function calculateProgressiveTax(chargeableIncome) {
+            if (chargeableIncome <= 0) return 0;
+            let remaining = chargeableIncome;
+            let tax = 0;
+            for (const [bandAmount, rate] of SG_TAX_CONFIG.PROGRESSIVE_BRACKETS) {
+                if (remaining <= 0) break;
+                const taxableInBand = Math.min(remaining, bandAmount);
+                tax += taxableInBand * rate;
+                remaining -= taxableInBand;
+            }
+            return tax;
+        }
+
+        function calculateSelectedReliefs(employeeCpfAnnual) {
+            const useEarned = document.getElementById("reliefEarnedIncome").checked;
+            const useSpouse = document.getElementById("reliefSpouse").checked;
+            const useChild = document.getElementById("reliefChild").checked;
+            const useParent = document.getElementById("reliefParent").checked;
+            const useCourseFees = document.getElementById("reliefCourseFees").checked;
+            const useCpfTopup = document.getElementById("reliefCpfTopup").checked;
+
+            const childCount = toNonNegativeInt(document.getElementById("childCount").value);
+            const parentCount = toNonNegativeInt(document.getElementById("parentCount").value);
+            const courseFeesAmount = toNonNegativeNumber(document.getElementById("courseFeesAmount").value);
+            const cpfTopupAmount = toNonNegativeNumber(document.getElementById("cpfTopupAmount").value);
+
+            let total = 0;
+            total += employeeCpfAnnual; // Auto include employee CPF
+            if (useEarned) total += SG_TAX_CONFIG.RELIEF_EARNED_INCOME;
+            if (useSpouse) total += SG_TAX_CONFIG.RELIEF_SPOUSE;
+            if (useChild) total += childCount * SG_TAX_CONFIG.RELIEF_CHILD_EACH;
+            if (useParent) total += parentCount * SG_TAX_CONFIG.RELIEF_PARENT_EACH;
+            if (useCourseFees) total += Math.min(courseFeesAmount, SG_TAX_CONFIG.RELIEF_COURSE_FEES_CAP);
+            if (useCpfTopup) total += Math.min(cpfTopupAmount, SG_TAX_CONFIG.RELIEF_CPF_TOPUP_CAP);
+            return Math.min(total, SG_TAX_CONFIG.RELIEF_TOTAL_CAP);
+        }
+
+        function calculate() {
+            const taxResidency = document.getElementById("taxResidency").value;
+            const monthlySalary = toNonNegativeNumber(document.getElementById("monthlySalary").value);
+            const bonusMonths = toNonNegativeNumber(document.getElementById("bonusMonths").value);
+            const extraDeductions = toNonNegativeNumber(document.getElementById("extraDeductions").value);
+
+            const annualSalary = monthlySalary * 12;
+            const bonusAmount = monthlySalary * bonusMonths;
+            const annualGross = annualSalary + bonusAmount;
+
+            const employeeCpfMonthly = calculateMonthlyCpf(monthlySalary, SG_TAX_CONFIG.CPF_EMPLOYEE_RATE);
+            const employerCpfMonthly = calculateMonthlyCpf(monthlySalary, SG_TAX_CONFIG.CPF_EMPLOYER_RATE);
+            const employeeCpfAnnual = employeeCpfMonthly * 12;
+
+            const selectedRelief = calculateSelectedReliefs(employeeCpfAnnual);
+            const assessableIncome = Math.max(0, annualGross - extraDeductions);
+            const chargeableIncome = Math.max(0, assessableIncome - selectedRelief);
+
+            const progressiveTax = calculateProgressiveTax(chargeableIncome);
+            const flatTax = assessableIncome * SG_TAX_CONFIG.FLAT_RATE_NON_RESIDENT;
+
+            let annualTax = progressiveTax;
+            let method = `累进税率（${formatPercent(assessableIncome > 0 ? progressiveTax / assessableIncome : 0)}）`;
+            if (taxResidency === "nonResident") {
+                annualTax = Math.max(flatTax, progressiveTax);
+                method = annualTax === flatTax
+                    ? "非居民平税率（15%）"
+                    : `非居民按累进税率（${formatPercent(assessableIncome > 0 ? progressiveTax / assessableIncome : 0)}）`;
+            }
+
+            const monthlyNetBeforeTax = monthlySalary - employeeCpfMonthly;
+            document.getElementById("monthlyTable").innerHTML = `
+                <tr>
+                    <td>1-12月</td>
+                    <td>${formatMoney(monthlySalary)}</td>
+                    <td>${formatMoney(employeeCpfMonthly)}</td>
+                    <td>${formatMoney(employerCpfMonthly)}</td>
+                    <td>${formatMoney(monthlyNetBeforeTax)}</td>
+                </tr>
+            `;
+
+            const annualNet = annualGross - employeeCpfAnnual - annualTax;
+
+            document.getElementById("annualGross").textContent = formatMoney(annualGross);
+            document.getElementById("annualEmployeeCpf").textContent = formatMoney(employeeCpfAnnual);
+            document.getElementById("annualRelief").textContent = formatMoney(selectedRelief);
+            document.getElementById("annualTax").textContent = formatMoney(annualTax);
+            document.getElementById("flatTax").textContent = formatMoney(flatTax);
+            document.getElementById("progressiveTax").textContent = formatMoney(progressiveTax);
+            document.getElementById("taxMethod").textContent = method;
+            document.getElementById("annualNet").textContent = formatMoney(annualNet);
+        }
+
+        window.onload = calculate;
+    </script>
+</body>
+</html>
