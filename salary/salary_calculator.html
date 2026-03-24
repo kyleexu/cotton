@@ -48,7 +48,7 @@
         }
 
         th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: #fff;
             padding: 12px 8px;
             text-align: right;
@@ -285,6 +285,21 @@
             text-align: center;
             margin-top: 10px;
         }
+        .nav-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+        .top-left-nav {
+            position: fixed;
+            left: 16px;
+            top: 16px;
+            z-index: 1000;
+        }
 
         /* 表格容器，支持横向滚动 */
         .table-wrapper {
@@ -347,6 +362,9 @@
 </head>
 
 <body>
+    <div class="top-left-nav">
+        <a class="nav-link" href="../index.html">返回入口</a>
+    </div>
     <div class="container">
         <!-- 输入参数 -->
         <div class="card">
@@ -505,6 +523,29 @@
                 </div>
             </div>
         </div>
+
+        <!-- 分档税额明细 -->
+        <div class="card">
+            <h2>分档税额明细</h2>
+            <div class="base-info">工资个税按累计预扣法税率表分档展示；年终奖独立计税时会单独展示适用税档。</div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="5">工资个税分档明细（全年累计应税）</th>
+                        </tr>
+                        <tr>
+                            <th>税档区间</th>
+                            <th>税率</th>
+                            <th>速算扣除数</th>
+                            <th>该档应税额</th>
+                            <th>该档税额</th>
+                        </tr>
+                    </thead>
+                    <tbody id="taxBracketTable"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -549,6 +590,13 @@
 
         function formatPercent(rate) {
             return (rate * 100).toFixed(2) + '%';
+        }
+
+        function getBracketRangeText(lower, upper) {
+            if (!isFinite(upper)) {
+                return `${formatInteger(lower)} 以上`;
+            }
+            return `${formatInteger(lower)} - ${formatInteger(upper)}`;
         }
 
         // ========== 获取当前最大基数 ==========
@@ -702,6 +750,25 @@
             return bonus * rate - quickDeduction;
         }
 
+        function getTaxBreakdownRows(annualTaxableIncome) {
+            if (annualTaxableIncome <= 0) return [];
+            const rows = [];
+            for (const [lower, upper, rate, quickDeduction] of CONFIG.TAX_BRACKETS) {
+                if (annualTaxableIncome <= lower) break;
+                const taxableInBand = Math.min(annualTaxableIncome, upper) - lower;
+                if (taxableInBand <= 0) continue;
+                rows.push({
+                    lower,
+                    upper,
+                    rate,
+                    quickDeduction,
+                    taxableInBand,
+                    bandTax: taxableInBand * rate
+                });
+            }
+            return rows;
+        }
+
         // ========== 主计算函数 ==========
         function calculate() {
             const monthlySalary = parseFloat(document.getElementById('monthlySalary').value) || 0;
@@ -842,6 +909,26 @@
             document.getElementById('totalNet').textContent = formatNumber(annualNetSalary);
             document.getElementById('taxRate').textContent = formatPercent(taxRate);
             document.getElementById('realTaxRate').textContent = formatPercent(realTaxRate);
+
+            // 分档税额明细（工资）
+            const taxBreakdownRows = getTaxBreakdownRows(cumulativeTaxableIncome);
+            if (taxBreakdownRows.length === 0) {
+                document.getElementById('taxBracketTable').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align:center;">全年累计应税所得为 0，无分档税额。</td>
+                    </tr>
+                `;
+            } else {
+                document.getElementById('taxBracketTable').innerHTML = taxBreakdownRows.map((row) => `
+                    <tr>
+                        <td>${getBracketRangeText(row.lower, row.upper)}</td>
+                        <td>${formatPercent(row.rate)}</td>
+                        <td>${formatNumber(row.quickDeduction)}</td>
+                        <td>${formatNumber(row.taxableInBand)}</td>
+                        <td>${formatNumber(row.bandTax)}</td>
+                    </tr>
+                `).join('');
+            }
         }
 
         // 页面加载时初始化

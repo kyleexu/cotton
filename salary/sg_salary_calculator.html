@@ -66,6 +66,21 @@
         .summary-item.highlight .summary-label { color: rgba(255,255,255,0.85); }
         .summary-value { font-size: 22px; font-weight: 700; color: #2c3e50; }
         .summary-item.highlight .summary-value { color: #fff; }
+        .nav-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+        .top-left-nav {
+            position: fixed;
+            left: 16px;
+            top: 16px;
+            z-index: 1000;
+        }
         @media (max-width: 900px) {
             .input-section, .summary-grid { grid-template-columns: repeat(2, 1fr); }
         }
@@ -76,6 +91,9 @@
     </style>
 </head>
 <body>
+    <div class="top-left-nav">
+        <a class="nav-link" href="../index.html">返回入口</a>
+    </div>
     <div class="container">
         <h1>新加坡薪资方案计算器</h1>
 

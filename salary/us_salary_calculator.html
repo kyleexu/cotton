@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美国薪资方案计算器</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #b22234 0%, #3c3b6e 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            text-align: center; color: #fff; margin-bottom: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.35);
+        }
+        .card {
+            background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            padding: 22px; margin-bottom: 24px;
+        }
+        h2 {
+            margin: 0 0 16px 0; color: #2c3e50; border-bottom: 3px solid #3c3b6e; padding-bottom: 8px;
+        }
+        .input-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { font-size: 14px; margin-bottom: 8px; color: #4c5661; font-weight: 500; }
+        .input-group input, .input-group select {
+            padding: 12px; border: 2px solid #e1e5ea; border-radius: 8px; font-size: 15px; background: #fff;
+        }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #3c3b6e; }
+        .base-info { font-size: 12px; color: #8a94a1; margin-top: 6px; }
+        .btn-wrapper { text-align: center; margin-top: 14px; }
+        .calculate-btn {
+            background: linear-gradient(135deg, #b22234 0%, #3c3b6e 100%); color: #fff; border: none; border-radius: 8px;
+            padding: 12px 34px; font-size: 16px; font-weight: 700; cursor: pointer;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px 8px; text-align: right; border-bottom: 1px solid #eef1f4; }
+        th { background: #f4f7fa; color: #2c3e50; font-weight: 600; }
+        th:first-child, td:first-child { text-align: center; }
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .summary-item { background: #f6f8fb; border-radius: 10px; padding: 16px; text-align: center; }
+        .summary-item.highlight { background: linear-gradient(135deg, #b22234 0%, #3c3b6e 100%); color: #fff; }
+        .summary-label { font-size: 13px; margin-bottom: 8px; color: #5f6b78; }
+        .summary-item.highlight .summary-label { color: rgba(255,255,255,0.85); }
+        .summary-value { font-size: 22px; font-weight: 700; color: #2c3e50; }
+        .summary-item.highlight .summary-value { color: #fff; }
+        .nav-link {
+            display: inline-block; text-decoration: none; color: #fff;
+            background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+            padding: 10px 14px; border-radius: 8px; font-weight: 700;
+        }
+        .top-left-nav {
+            position: fixed;
+            left: 16px;
+            top: 16px;
+            z-index: 1000;
+        }
+        @media (max-width: 900px) {
+            .input-section, .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 560px) {
+            body { padding: 12px; }
+            .input-section, .summary-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-left-nav">
+        <a class="nav-link" href="../index.html">返回入口</a>
+    </div>
+    <div class="container">
+        <h1>美国薪资方案计算器</h1>
+
+        <div class="card">
+            <h2>输入参数（按美元 USD）</h2>
+            <div class="input-section">
+                <div class="input-group">
+                    <label>报税身份</label>
+                    <select id="filingStatus">
+                        <option value="single" selected>Single</option>
+                        <option value="married">Married Filing Jointly</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>州税方案</label>
+                    <select id="stateTaxMode" onchange="calculate()">
+                        <option value="none" selected>无州税（0%）</option>
+                        <option value="ca">加州（6.00%）</option>
+                        <option value="ny">纽约州（6.50%）</option>
+                        <option value="tx">德州（0.00%）</option>
+                        <option value="fl">佛罗里达州（0.00%）</option>
+                        <option value="wa">华盛顿州（0.00%）</option>
+                        <option value="nv">内华达州（0.00%）</option>
+                        <option value="ma">马萨诸塞州（5.00%）</option>
+                        <option value="il">伊利诺伊州（4.95%）</option>
+                        <option value="pa">宾夕法尼亚州（3.07%）</option>
+                        <option value="nj">新泽西州（5.50%）</option>
+                        <option value="ga">乔治亚州（5.75%）</option>
+                        <option value="nc">北卡罗来纳州（4.50%）</option>
+                        <option value="co">科罗拉多州（4.40%）</option>
+                        <option value="va">弗吉尼亚州（5.00%）</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>月薪（USD）</label>
+                    <input type="number" id="monthlySalary" value="10000" step="100">
+                </div>
+                <div class="input-group">
+                    <label>年终奖（月数）</label>
+                    <input type="number" id="bonusMonths" value="1" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>税前退休金占比（401k，%）</label>
+                    <input type="number" id="pretaxRetirementRate" value="6" min="0" max="100" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>额外税前扣除（全年）</label>
+                    <input type="number" id="extraPretaxDeductions" value="0" min="0" step="100">
+                </div>
+                <div class="input-group">
+                    <label>额外税后扣除（全年）</label>
+                    <input type="number" id="extraPosttaxDeductions" value="0" min="0" step="100">
+                </div>
+            </div>
+            <div class="base-info">
+                说明：联邦税按 2024 年常见税档（Single / Married Joint）+ 标准扣除估算；FICA 包含 Social Security（6.2%，工资上限）与 Medicare（1.45% + 高收入附加 0.9%）。州税这里按简化估算。
+            </div>
+            <div class="btn-wrapper">
+                <button class="calculate-btn" onclick="calculate()">计算</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>月度明细（估算）</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>月份</th>
+                        <th>税前工资</th>
+                        <th>税前扣除（401k+额外）</th>
+                        <th>联邦税</th>
+                        <th>FICA</th>
+                        <th id="stateTaxHeader">州税（0.00%）</th>
+                        <th>税后到手</th>
+                    </tr>
+                </thead>
+                <tbody id="monthlyTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>年度汇总</h2>
+            <div class="summary-grid">
+                <div class="summary-item"><div class="summary-label">全年税前总收入</div><div class="summary-value" id="annualGross">0</div></div>
+                <div class="summary-item"><div class="summary-label">税前扣除（全年）</div><div class="summary-value" id="annualPretaxDeductions">0</div></div>
+                <div class="summary-item"><div class="summary-label">联邦应税收入</div><div class="summary-value" id="federalTaxableIncome">0</div></div>
+                <div class="summary-item"><div class="summary-label">联邦所得税（全年）</div><div class="summary-value" id="annualFederalTax">0</div></div>
+                <div class="summary-item"><div class="summary-label">社保税 SS（全年）</div><div class="summary-value" id="annualSocialSecurityTax">0</div></div>
+                <div class="summary-item"><div class="summary-label">医疗保险税 Medicare（全年）</div><div class="summary-value" id="annualMedicareTax">0</div></div>
+                <div class="summary-item"><div class="summary-label">州税（全年）</div><div class="summary-value" id="annualStateTax">0</div></div>
+                <div class="summary-item highlight"><div class="summary-label">税后到手（全年）</div><div class="summary-value" id="annualNet">0</div></div>
+            </div>
+            <div class="base-info" style="margin-top:12px;">
+                注：本页用于快速估算，未覆盖全部抵免/专项规则（如 Child Tax Credit、itemized deduction、州税真实分档等）。
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>分档税额明细</h2>
+            <div class="base-info">联邦税按累进税率逐档计算；州税当前为简化方案（统一税率或 0%）。</div>
+            <table style="margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <th colspan="4">联邦税分档明细</th>
+                    </tr>
+                    <tr>
+                        <th>税档区间</th>
+                        <th>税率</th>
+                        <th>该档应税额</th>
+                        <th>该档税额</th>
+                    </tr>
+                </thead>
+                <tbody id="federalBracketTable"></tbody>
+            </table>
+            <table style="margin-top: 18px;">
+                <thead>
+                    <tr>
+                        <th colspan="4">州税明细</th>
+                    </tr>
+                    <tr>
+                        <th>方案</th>
+                        <th>税率</th>
+                        <th>计税基数</th>
+                        <th>税额</th>
+                    </tr>
+                </thead>
+                <tbody id="stateBracketTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const MONTH_NAMES = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+        const US_TAX_CONFIG = {
+            SOCIAL_SECURITY_RATE: 0.062,
+            SOCIAL_SECURITY_WAGE_BASE: 168600,
+            MEDICARE_RATE: 0.0145,
+            ADDITIONAL_MEDICARE_RATE: 0.009,
+            ADDITIONAL_MEDICARE_THRESHOLD: {
+                single: 200000,
+                married: 250000
+            },
+            STANDARD_DEDUCTION: {
+                single: 14600,
+                married: 29200
+            },
+            STATE_RATE: {
+                none: 0,
+                ca: 0.06,
+                ny: 0.065,
+                tx: 0,
+                fl: 0,
+                wa: 0,
+                nv: 0,
+                ma: 0.05,
+                il: 0.0495,
+                pa: 0.0307,
+                nj: 0.055,
+                ga: 0.0575,
+                nc: 0.045,
+                co: 0.044,
+                va: 0.05
+            },
+            FEDERAL_BRACKETS: {
+                single: [
+                    [11600, 0.10],
+                    [47150, 0.12],
+                    [100525, 0.22],
+                    [191950, 0.24],
+                    [243725, 0.32],
+                    [609350, 0.35],
+                    [Infinity, 0.37]
+                ],
+                married: [
+                    [23200, 0.10],
+                    [94300, 0.12],
+                    [201050, 0.22],
+                    [383900, 0.24],
+                    [487450, 0.32],
+                    [731200, 0.35],
+                    [Infinity, 0.37]
+                ]
+            }
+        };
+
+        function formatMoney(num) {
+            return Number(num).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " USD";
+        }
+        function formatPercent(rate) {
+            return (Number(rate) * 100).toFixed(2) + "%";
+        }
+        function formatRange(lower, upper) {
+            const lowerText = Number(lower).toLocaleString("en-US", { maximumFractionDigits: 0 });
+            if (!Number.isFinite(upper)) {
+                return `${lowerText}+`;
+            }
+            const upperText = Number(upper).toLocaleString("en-US", { maximumFractionDigits: 0 });
+            return `${lowerText} - ${upperText}`;
+        }
+        function toNonNegativeNumber(v) {
+            return Math.max(0, Number(v) || 0);
+        }
+        function clamp(v, min, max) {
+            return Math.min(Math.max(v, min), max);
+        }
+        function getStateModeLabel(mode) {
+            const stateModeLabelMap = {
+                none: "无州税",
+                ca: "加州",
+                ny: "纽约州",
+                tx: "德州",
+                fl: "佛罗里达州",
+                wa: "华盛顿州",
+                nv: "内华达州",
+                ma: "马萨诸塞州",
+                il: "伊利诺伊州",
+                pa: "宾夕法尼亚州",
+                nj: "新泽西州",
+                ga: "乔治亚州",
+                nc: "北卡罗来纳州",
+                co: "科罗拉多州",
+                va: "弗吉尼亚州"
+            };
+            return stateModeLabelMap[mode] || "州税";
+        }
+        function getStateRate() {
+            const mode = document.getElementById("stateTaxMode").value;
+            return US_TAX_CONFIG.STATE_RATE[mode] || 0;
+        }
+        function calculateProgressiveTax(income, brackets) {
+            if (income <= 0) return 0;
+            let tax = 0;
+            let previousUpper = 0;
+            for (const [upper, rate] of brackets) {
+                if (income <= previousUpper) break;
+                const taxableInBand = Math.min(income, upper) - previousUpper;
+                tax += taxableInBand * rate;
+                previousUpper = upper;
+            }
+            return tax;
+        }
+        function getProgressiveBreakdown(income, brackets) {
+            const rows = [];
+            if (income <= 0) return rows;
+            let previousUpper = 0;
+            for (const [upper, rate] of brackets) {
+                if (income <= previousUpper) break;
+                const taxableInBand = Math.min(income, upper) - previousUpper;
+                const bandTax = taxableInBand * rate;
+                rows.push({
+                    lower: previousUpper,
+                    upper,
+                    rate,
+                    taxableInBand,
+                    bandTax
+                });
+                previousUpper = upper;
+            }
+            return rows;
+        }
+
+        function calculate() {
+            const filingStatus = document.getElementById("filingStatus").value;
+            const monthlySalary = toNonNegativeNumber(document.getElementById("monthlySalary").value);
+            const bonusMonths = toNonNegativeNumber(document.getElementById("bonusMonths").value);
+            const pretaxRetirementRate = clamp(toNonNegativeNumber(document.getElementById("pretaxRetirementRate").value), 0, 100) / 100;
+            const extraPretaxDeductions = toNonNegativeNumber(document.getElementById("extraPretaxDeductions").value);
+            const extraPosttaxDeductions = toNonNegativeNumber(document.getElementById("extraPosttaxDeductions").value);
+            const stateRate = getStateRate();
+
+            const annualBaseSalary = monthlySalary * 12;
+            const annualBonus = monthlySalary * bonusMonths;
+            const annualGross = annualBaseSalary + annualBonus;
+            const standardDeduction = US_TAX_CONFIG.STANDARD_DEDUCTION[filingStatus];
+            const additionalMedicareThreshold = US_TAX_CONFIG.ADDITIONAL_MEDICARE_THRESHOLD[filingStatus];
+            const stateMode = document.getElementById("stateTaxMode").value;
+            const stateModeLabel = getStateModeLabel(stateMode);
+            const bonusInDecember = annualBonus;
+            const monthlyExtraPretax = extraPretaxDeductions / 12;
+            const monthlyExtraPosttax = extraPosttaxDeductions / 12;
+
+            let cumulativeGross = 0;
+            let cumulativeTaxableBeforeStandard = 0;
+            let previousCumulativeFederalTax = 0;
+            let annualPretaxDeductions = 0;
+            let annualFederalTax = 0;
+            let annualSocialSecurityTax = 0;
+            let annualMedicareTax = 0;
+            let annualStateTax = 0;
+            let annualNet = 0;
+            let monthlyRows = "";
+
+            for (let i = 0; i < 12; i++) {
+                const monthlyGross = monthlySalary + (i === 11 ? bonusInDecember : 0);
+                const monthlyPretax = monthlyGross * pretaxRetirementRate + monthlyExtraPretax;
+                const monthlyTaxableBeforeStandard = Math.max(0, monthlyGross - monthlyPretax);
+
+                const prevCumulativeGross = cumulativeGross;
+                cumulativeGross += monthlyGross;
+                cumulativeTaxableBeforeStandard += monthlyTaxableBeforeStandard;
+
+                const cumulativeFederalTaxableIncome = Math.max(0, cumulativeTaxableBeforeStandard - standardDeduction);
+                const cumulativeFederalTax = calculateProgressiveTax(cumulativeFederalTaxableIncome, US_TAX_CONFIG.FEDERAL_BRACKETS[filingStatus]);
+                const monthlyFederalTax = Math.max(0, cumulativeFederalTax - previousCumulativeFederalTax);
+                previousCumulativeFederalTax = cumulativeFederalTax;
+
+                const ssWagesThisMonth = Math.max(
+                    0,
+                    Math.min(cumulativeGross, US_TAX_CONFIG.SOCIAL_SECURITY_WAGE_BASE) - Math.min(prevCumulativeGross, US_TAX_CONFIG.SOCIAL_SECURITY_WAGE_BASE)
+                );
+                const monthlySocialSecurityTax = ssWagesThisMonth * US_TAX_CONFIG.SOCIAL_SECURITY_RATE;
+                const monthlyBaseMedicareTax = monthlyGross * US_TAX_CONFIG.MEDICARE_RATE;
+                const additionalMedicareWagesThisMonth = Math.max(0, cumulativeGross - additionalMedicareThreshold) - Math.max(0, prevCumulativeGross - additionalMedicareThreshold);
+                const monthlyAdditionalMedicareTax = additionalMedicareWagesThisMonth * US_TAX_CONFIG.ADDITIONAL_MEDICARE_RATE;
+                const monthlyMedicareTax = monthlyBaseMedicareTax + monthlyAdditionalMedicareTax;
+                const monthlyFica = monthlySocialSecurityTax + monthlyMedicareTax;
+
+                const monthlyStateTax = monthlyTaxableBeforeStandard * stateRate;
+                const monthlyNet = monthlyGross - monthlyPretax - monthlyFederalTax - monthlyFica - monthlyStateTax - monthlyExtraPosttax;
+
+                annualPretaxDeductions += monthlyPretax;
+                annualFederalTax += monthlyFederalTax;
+                annualSocialSecurityTax += monthlySocialSecurityTax;
+                annualMedicareTax += monthlyMedicareTax;
+                annualStateTax += monthlyStateTax;
+                annualNet += monthlyNet;
+
+                monthlyRows += `
+                    <tr>
+                        <td>${MONTH_NAMES[i]}</td>
+                        <td>${formatMoney(monthlyGross)}</td>
+                        <td>${formatMoney(monthlyPretax)}</td>
+                        <td>${formatMoney(monthlyFederalTax)}</td>
+                        <td>${formatMoney(monthlyFica)}</td>
+                        <td>${formatMoney(monthlyStateTax)}</td>
+                        <td>${formatMoney(monthlyNet)}</td>
+                    </tr>
+                `;
+            }
+            document.getElementById("monthlyTable").innerHTML = monthlyRows;
+            document.getElementById("stateTaxHeader").textContent = `州税（${stateModeLabel} ${formatPercent(stateRate)}）`;
+
+            const adjustedGrossForIncomeTax = Math.max(0, annualGross - annualPretaxDeductions);
+            const federalTaxableIncome = Math.max(0, adjustedGrossForIncomeTax - standardDeduction);
+            const annualFicaTax = annualSocialSecurityTax + annualMedicareTax;
+            const federalBreakdown = getProgressiveBreakdown(federalTaxableIncome, US_TAX_CONFIG.FEDERAL_BRACKETS[filingStatus]);
+
+            document.getElementById("annualGross").textContent = formatMoney(annualGross);
+            document.getElementById("annualPretaxDeductions").textContent = formatMoney(annualPretaxDeductions);
+            document.getElementById("federalTaxableIncome").textContent = formatMoney(federalTaxableIncome);
+            document.getElementById("annualFederalTax").textContent = formatMoney(annualFederalTax);
+            document.getElementById("annualSocialSecurityTax").textContent = formatMoney(annualSocialSecurityTax);
+            document.getElementById("annualMedicareTax").textContent = formatMoney(annualMedicareTax);
+            document.getElementById("annualStateTax").textContent = formatMoney(annualStateTax);
+            document.getElementById("annualNet").textContent = formatMoney(annualNet);
+
+            if (federalBreakdown.length === 0) {
+                document.getElementById("federalBracketTable").innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center;">联邦应税收入为 0，无分档税额。</td>
+                    </tr>
+                `;
+            } else {
+                document.getElementById("federalBracketTable").innerHTML = federalBreakdown.map((row) => `
+                    <tr>
+                        <td>${formatRange(row.lower, row.upper)}</td>
+                        <td>${formatPercent(row.rate)}</td>
+                        <td>${formatMoney(row.taxableInBand)}</td>
+                        <td>${formatMoney(row.bandTax)}</td>
+                    </tr>
+                `).join("");
+            }
+
+            document.getElementById("stateBracketTable").innerHTML = `
+                <tr>
+                    <td>${stateModeLabel}</td>
+                    <td>${formatPercent(stateRate)}</td>
+                    <td>${formatMoney(adjustedGrossForIncomeTax)}</td>
+                    <td>${formatMoney(annualStateTax)}</td>
+                </tr>
+            `;
+        }
+
+        window.onload = function () {
+            calculate();
+        };
+    </script>
+</body>
+</html>
