@@ -2,7 +2,7 @@
 
 一个纯前端静态项目，提供多地区薪资方案的快速测算页面。
 
-访问地址为：`https://kyleexu.github.io/cotton`
+访问地址为：https://kyleexu.github.io/cotton
 
 ## 功能概览
 
