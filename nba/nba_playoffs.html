@@ -40,6 +40,7 @@
             border-radius: 0;
             box-shadow: none;
             padding: 16px;
+            overflow-x: auto;
         }
 
         .hint {
@@ -50,9 +51,11 @@
 
         .main-layout {
             display: grid;
-            grid-template-columns: max-content 1fr max-content;
+            grid-template-columns: max-content max-content max-content;
             gap: 10px;
             align-items: start;
+            width: max-content;
+            min-width: 100%;
         }
 
         .playin-panel {
@@ -96,32 +99,13 @@
         }
 
         .bracket-wrap {
-            overflow: hidden;
-            padding-bottom: 0;
+            overflow: visible;
+            padding-bottom: 6px;
             min-width: 0;
-            --bracket-scale: 1;
-            position: relative;
             padding-left: 8px;
             padding-right: 8px;
-        }
-
-        .bracket-wrap::before,
-        .bracket-wrap::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: #d6dde7;
-            pointer-events: none;
-        }
-
-        .bracket-wrap::before {
-            left: 0;
-        }
-
-        .bracket-wrap::after {
-            right: 0;
+            border-left: 1px solid #d6dde7;
+            border-right: 1px solid #d6dde7;
         }
 
         .conference-grid {
@@ -130,8 +114,6 @@
             gap: 12px;
             align-items: start;
             width: max-content;
-            transform: scale(var(--bracket-scale));
-            transform-origin: top left;
         }
 
         .finals-panel {
@@ -197,11 +179,14 @@
             text-align: right;
         }
 
+        .conference-panel.east .seed {
+            align-self: center;
+        }
+
         .conference-panel.east .team-card,
         .conference-panel.east .win-card,
         .conference-panel.east .semi-card,
-        .conference-panel.east .champ-card,
-        .conference-panel.east .team-line {
+        .conference-panel.east .champ-card {
             align-items: flex-end;
         }
 
@@ -229,6 +214,7 @@
             box-shadow: none;
             width: fit-content;
             min-width: 0;
+            text-align: center;
         }
 
         .team-card {
@@ -243,8 +229,9 @@
         .team-line {
             display: inline-flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             gap: 4px;
+            text-align: center;
         }
 
         .team-name {
@@ -253,8 +240,8 @@
         }
 
         .team-logo {
-            width: 40px;
-            height: 40px;
+            width: 64px;
+            height: 64px;
             object-fit: contain;
             flex-shrink: 0;
         }
@@ -290,8 +277,10 @@
         }
 
         .seed {
+            display: block;
             color: var(--muted);
             font-size: 0.88rem;
+            text-align: center;
         }
 
         @media (max-width: 640px) {
@@ -299,9 +288,21 @@
                 --slot-height: 92px;
             }
 
+            section {
+                overflow-x: visible;
+            }
+
             .main-layout {
                 grid-template-columns: 1fr;
                 gap: 20px;
+                width: 100%;
+                min-width: 0;
+            }
+
+            .playin-panel,
+            .bracket-wrap {
+                overflow-x: auto;
+                overflow-y: hidden;
             }
 
             .conference-grid {
@@ -325,8 +326,8 @@
             }
 
             .team-logo {
-                width: 36px;
-                height: 36px;
+                width: 68px;
+                height: 68px;
             }
         }
     </style>
@@ -1078,23 +1079,7 @@
         }
 
         function fitBracketToViewport() {
-            const mainLayout = document.querySelector('.main-layout');
-            const bracketWrap = document.querySelector('.bracket-wrap');
-            const conferenceGrid = document.querySelector('.conference-grid');
-            if (!mainLayout || !bracketWrap || !conferenceGrid || mainLayout.children.length < 3) return;
-
-            bracketWrap.style.setProperty('--bracket-scale', '1');
-
-            const leftPanel = mainLayout.children[0];
-            const rightPanel = mainLayout.children[2];
-            const style = getComputedStyle(mainLayout);
-            const gap = parseFloat(style.columnGap || style.gap || '0');
-            const available = mainLayout.clientWidth - leftPanel.offsetWidth - rightPanel.offsetWidth - gap * 2;
-            const required = conferenceGrid.scrollWidth;
-
-            if (required <= 0 || available <= 0) return;
-            const scale = Math.min(1, available / required);
-            bracketWrap.style.setProperty('--bracket-scale', String(scale));
+            return;
         }
 
         document.querySelectorAll('[data-playin-conf][data-playin-game]').forEach((el) => {
