@@ -253,24 +253,24 @@
                 calc(50% + 6px) 75%;
         }
 
-        .arrow-cell.final-connector.is-top-only[rowspan] {
+        .arrow-cell.is-top-only[rowspan] {
             background-image: linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
             background-size: 12px 1px;
             background-position: calc(50% - 12px) 25%;
         }
 
-        .arrow-cell.final-connector.is-bottom-only[rowspan] {
+        .arrow-cell.is-bottom-only[rowspan] {
             background-image: linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
             background-size: 12px 1px;
             background-position: calc(50% - 12px) 75%;
         }
 
-        .conference-panel.east .arrow-cell.final-connector.is-top-only[rowspan] {
+        .conference-panel.east .arrow-cell.is-top-only[rowspan] {
             background-image: linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
             background-position: calc(50% + 6px) 25%;
         }
 
-        .conference-panel.east .arrow-cell.final-connector.is-bottom-only[rowspan] {
+        .conference-panel.east .arrow-cell.is-bottom-only[rowspan] {
             background-image: linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
             background-position: calc(50% + 6px) 75%;
         }
@@ -449,8 +449,6 @@
                                 <th>附加赛对阵</th>
                                 <th></th>
                                 <th>比赛结果</th>
-                                <th></th>
-                                <th>晋级结果</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -469,8 +467,6 @@
                                 <td rowspan="2">
                                     <div class="win-card" id="west-playin-seed7"></div>
                                 </td>
-                                <td class="playin-arrow-cell" rowspan="2">→</td>
-                                <td rowspan="2"><span class="seed">第7</span></td>
                             </tr>
                             <tr>
                                 <td>
@@ -499,8 +495,6 @@
                                 <td rowspan="2">
                                     <div class="win-card" id="west-playin-g910"></div>
                                 </td>
-                                <td class="playin-arrow-cell"></td>
-                                <td></td>
                             </tr>
                             <tr>
                                 <td>
@@ -513,8 +507,6 @@
                                             class="seed">10名</span>
                                     </div>
                                 </td>
-                                <td class="playin-arrow-cell"></td>
-                                <td></td>
                             </tr>
                             <tr>
                                 <td>
@@ -526,8 +518,6 @@
                                 <td rowspan="2">
                                     <div class="win-card" id="west-playin-seed8"></div>
                                 </td>
-                                <td class="playin-arrow-cell" rowspan="2">→</td>
-                                <td rowspan="2"><span class="seed">第8</span></td>
                             </tr>
                             <tr>
                                 <td>
@@ -583,7 +573,7 @@
                                                 data-conf="west" data-source="m1" data-target="s1" tabindex="0"
                                                 role="button" aria-label="选择第一轮胜者进入西部第二轮"></div>
                                         </td>
-                                        <td class="arrow-cell" rowspan="4">→</td>
+                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s1" rowspan="4">→</td>
                                         <td rowspan="4">
                                             <div class="semi-card selectable-option is-selected" id="west-semi-s1"
                                                 data-conf="west" data-source="s1" data-target="final" tabindex="0"
@@ -649,7 +639,7 @@
                                                 data-source="m3" data-target="s2" tabindex="0" role="button"
                                                 aria-label="选择第一轮胜者进入西部第二轮"></div>
                                         </td>
-                                        <td class="arrow-cell" rowspan="4">→</td>
+                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s2" rowspan="4">→</td>
                                         <td rowspan="4">
                                             <div class="semi-card selectable-option" id="west-semi-s2" data-conf="west"
                                                 data-source="s2" data-target="final" tabindex="0" role="button"
@@ -739,7 +729,7 @@
                                                 data-conf="east" data-source="s1" data-target="final" tabindex="0"
                                                 role="button" aria-label="选择第二轮胜者进入东部决赛"></div>
                                         </td>
-                                        <td class="arrow-cell" rowspan="4">←</td>
+                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s1" rowspan="4">←</td>
                                         <td rowspan="2">
                                             <div class="win-card selectable-option is-selected" id="east-winner-m1"
                                                 data-conf="east" data-source="m1" data-target="s1" tabindex="0"
@@ -797,7 +787,7 @@
                                                 data-source="s2" data-target="final" tabindex="0" role="button"
                                                 aria-label="选择第二轮胜者进入东部决赛"></div>
                                         </td>
-                                        <td class="arrow-cell" rowspan="4">←</td>
+                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s2" rowspan="4">←</td>
                                         <td rowspan="2">
                                             <div class="win-card selectable-option" id="east-winner-m2" data-conf="east"
                                                 data-source="m2" data-target="s2" tabindex="0" role="button"
@@ -862,8 +852,6 @@
                     <table class="playin-table" aria-label="东部附加赛树状图">
                         <thead>
                             <tr>
-                                <th>晋级结果</th>
-                                <th></th>
                                 <th>比赛结果</th>
                                 <th></th>
                                 <th>附加赛对阵</th>
@@ -871,8 +859,6 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td rowspan="2"><span class="seed">第7</span></td>
-                                <td class="playin-arrow-cell" rowspan="2">←</td>
                                 <td rowspan="2">
                                     <div class="win-card" id="east-playin-seed7"></div>
                                 </td>
@@ -901,8 +887,6 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td></td>
-                                <td class="playin-arrow-cell"></td>
                                 <td rowspan="2">
                                     <div class="win-card" id="east-playin-g910"></div>
                                 </td>
@@ -919,8 +903,6 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td></td>
-                                <td class="playin-arrow-cell"></td>
                                 <td>
                                     <div class="team-card selectable-option" data-playin-conf="east"
                                         data-playin-game="g910" data-team="heat" tabindex="0" role="button"
@@ -933,8 +915,6 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td rowspan="2"><span class="seed">第8</span></td>
-                                <td class="playin-arrow-cell" rowspan="2">←</td>
                                 <td rowspan="2">
                                     <div class="win-card" id="east-playin-seed8"></div>
                                 </td>
@@ -990,6 +970,7 @@
                 ids: {
                     winners: { m1: 'west-winner-m1', m2: 'west-winner-m2', m3: 'west-winner-m3', m4: 'west-winner-m4' },
                     semis: { s1: 'west-semi-s1', s2: 'west-semi-s2' },
+                    semiConnectors: { s1: 'west-semi-connector-s1', s2: 'west-semi-connector-s2' },
                     champion: 'west-champion',
                     finalConnector: 'west-final-connector',
                     championFallback: '西部冠军'
@@ -1001,6 +982,7 @@
                 ids: {
                     winners: { m1: 'east-winner-m1', m2: 'east-winner-m2', m3: 'east-winner-m3', m4: 'east-winner-m4' },
                     semis: { s1: 'east-semi-s1', s2: 'east-semi-s2' },
+                    semiConnectors: { s1: 'east-semi-connector-s1', s2: 'east-semi-connector-s2' },
                     champion: 'east-champion',
                     finalConnector: 'east-final-connector',
                     championFallback: '东部冠军'
@@ -1157,7 +1139,26 @@
             document.getElementById(ids.semis.s1).classList.toggle('is-selected', state.final === state.s1 && !!state.s1);
             document.getElementById(ids.semis.s2).classList.toggle('is-selected', state.final === state.s2 && !!state.s2);
             document.getElementById(ids.champion).classList.toggle('is-selected', leagueState.champion === state.final && !!state.final);
+            updateSemiConnectors(conf);
             updateFinalConnector(conf);
+        }
+
+        function updateSemiConnectors(conf) {
+            const { state, ids, groups } = brackets[conf];
+            const s1Connector = document.getElementById(ids.semiConnectors.s1);
+            const s2Connector = document.getElementById(ids.semiConnectors.s2);
+            if (!s1Connector || !s2Connector) return;
+
+            s1Connector.classList.remove('is-top-only', 'is-bottom-only');
+            s2Connector.classList.remove('is-top-only', 'is-bottom-only');
+
+            const [s1Top, s1Bottom] = groups.s1;
+            const [s2Top, s2Bottom] = groups.s2;
+
+            if (state.s1 === state[s1Top]) s1Connector.classList.add('is-top-only');
+            if (state.s1 === state[s1Bottom]) s1Connector.classList.add('is-bottom-only');
+            if (state.s2 === state[s2Top]) s2Connector.classList.add('is-top-only');
+            if (state.s2 === state[s2Bottom]) s2Connector.classList.add('is-bottom-only');
         }
 
         function updateFinalConnector(conf) {
