@@ -18,6 +18,13 @@
             --surface-soft: #f8fbff;
             --shadow-soft: 0 8px 22px rgba(18, 38, 58, 0.06);
             --slot-height: 104px;
+            --space-2xs: 4px;
+            --space-xs: 6px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 20px;
+            --space-2xl: 32px;
         }
 
         * {
@@ -32,11 +39,33 @@
             line-height: 1.6;
         }
 
+        .page-header {
+            padding: var(--space-2xl) var(--space-2xl) var(--space-xl);
+            background: linear-gradient(135deg, #071525 0%, #0e2640 55%, #1a3a5c 100%);
+            text-align: center;
+            border-bottom: 1px solid rgba(31, 122, 140, 0.25);
+        }
+
+        .page-title {
+            margin: 0 0 var(--space-2xs);
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: #e8f0fa;
+        }
+
+        .page-subtitle {
+            margin: 0;
+            font-size: 0.86rem;
+            color: rgba(200, 220, 245, 0.6);
+            letter-spacing: 0.02em;
+        }
+
         .container {
             width: 100%;
             max-width: none;
             margin: 0;
-            padding: 18px 18px 34px;
+            padding: var(--space-lg) var(--space-xl) var(--space-2xl);
         }
 
         section {
@@ -44,23 +73,22 @@
             border: none;
             border-radius: 0;
             box-shadow: none;
-            padding: 18px;
+            padding: var(--space-lg);
             overflow-x: hidden;
         }
 
         .hint {
-            margin: 0 0 10px;
+            margin: 0 0 var(--space-sm);
             color: var(--muted);
             font-size: 0.9rem;
         }
 
         .main-layout {
             display: grid;
-            grid-template-columns: max-content max-content max-content;
-            gap: 12px;
+            grid-template-columns: max-content 1fr max-content;
+            gap: var(--space-2xl);
             align-items: start;
-            width: max-content;
-            min-width: 100%;
+            width: 100%;
             justify-content: space-between;
         }
 
@@ -78,7 +106,7 @@
         }
 
         .conference-title {
-            margin: 0 0 10px;
+            margin: 0 0 var(--space-md);
             font-size: 1.06rem;
             font-weight: 700;
             line-height: 1.35;
@@ -89,14 +117,14 @@
         .playin-table {
             width: max-content;
             border-collapse: separate;
-            border-spacing: 0 10px;
+            border-spacing: 0 var(--space-md);
         }
 
         .playin-table th,
         .playin-table td {
             border: none;
             background: transparent;
-            padding: 0 5px;
+            padding: 0 var(--space-xs);
             text-align: left;
             vertical-align: middle;
             font-size: 0.86rem;
@@ -155,21 +183,23 @@
 
         .bracket-wrap {
             overflow: visible;
-            padding-bottom: 6px;
+            padding-bottom: var(--space-xs);
             min-width: 0;
-            padding-left: 10px;
-            padding-right: 10px;
-            border-left: 1px dashed rgba(196, 207, 221, 0.75);
-            border-right: 1px dashed rgba(196, 207, 221, 0.75);
-            background: transparent;
+            padding-left: var(--space-md);
+            padding-right: var(--space-md);
+            border-left: 1px solid rgba(196, 207, 221, 0.5);
+            border-right: 1px solid rgba(196, 207, 221, 0.5);
+            background: rgba(248, 251, 255, 0.5);
             border-radius: 0;
+            display: flex;
+            justify-content: center;
         }
 
         .conference-grid {
             display: grid;
             grid-template-columns: max-content max-content max-content;
-            gap: 14px;
-            align-items: start;
+            gap: var(--space-lg);
+            align-items: stretch;
             width: max-content;
         }
 
@@ -177,8 +207,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-width: 152px;
-            padding-top: 214px;
         }
 
         .league-champion {
@@ -189,7 +219,7 @@
         .bracket-table {
             width: max-content;
             border-collapse: separate;
-            border-spacing: 0 10px;
+            border-spacing: 0 var(--space-md);
         }
 
         .col-team {
@@ -215,11 +245,11 @@
             color: var(--muted);
             font-size: 0.86rem;
             font-weight: 600;
-            padding: 0 5px 5px;
+            padding: 0 var(--space-xs) var(--space-xs);
         }
 
         .bracket-table td {
-            padding: 0 5px;
+            padding: 0 var(--space-xs);
             vertical-align: middle;
             text-align: left;
         }
@@ -292,7 +322,7 @@
 
         .playin-panel.east-playin .conference-title {
             text-align: right;
-            margin: 4px 4px 8px 0;
+            margin: 0 0 var(--space-md) 0;
         }
 
         .team-card,
@@ -302,7 +332,7 @@
             border: 1px solid rgba(196, 207, 221, 0.5);
             border-radius: 10px;
             background: var(--surface-soft);
-            padding: 6px 10px;
+            padding: var(--space-sm) var(--space-md);
             min-height: 0;
             display: inline-flex;
             flex-direction: column;
@@ -322,15 +352,15 @@
         .playin-table .team-card,
         .playin-table .win-card {
             min-height: 0;
-            padding-left: 8px;
-            padding-right: 8px;
+            padding-left: var(--space-sm);
+            padding-right: var(--space-sm);
         }
 
         .team-line {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: var(--space-sm);
             text-align: center;
         }
 
@@ -415,13 +445,13 @@
             }
 
             section {
-                padding: 12px;
+                padding: var(--space-md);
                 overflow-x: visible;
             }
 
             .main-layout {
                 grid-template-columns: 1fr;
-                gap: 16px;
+                gap: var(--space-lg);
                 width: 100%;
                 min-width: 0;
             }
@@ -434,7 +464,7 @@
 
             .conference-grid {
                 grid-template-columns: max-content;
-                gap: 20px;
+                gap: var(--space-xl);
             }
 
             .playin-panel {
@@ -447,9 +477,9 @@
             }
 
             .finals-panel {
-                padding-top: 0;
                 min-width: 0;
                 align-items: flex-start;
+                justify-content: flex-start;
             }
 
             .league-champion {
@@ -458,7 +488,7 @@
             }
 
             .conference-title {
-                margin-bottom: 8px;
+                margin-bottom: var(--space-sm);
                 font-size: 1rem;
             }
 
@@ -466,7 +496,7 @@
             .win-card,
             .semi-card,
             .champ-card {
-                padding: 6px 8px;
+                padding: var(--space-xs) var(--space-sm);
             }
 
             .team-logo {
@@ -478,19 +508,16 @@
 </head>
 
 <body>
+    <header class="page-header">
+        <h1 class="page-title">NBA 季后赛对战图</h1>
+        <p class="page-subtitle">2025&ndash;26 赛季 &middot; 点击队名选择晋级球队</p>
+    </header>
     <main class="container">
         <section>
             <div class="main-layout">
                 <div class="playin-panel">
                     <p class="conference-title">西部附加赛</p>
                     <table class="playin-table" aria-label="西部附加赛树状图">
-                        <thead>
-                            <tr>
-                                <th>附加赛对阵</th>
-                                <th></th>
-                                <th>比赛结果</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             <tr>
                                 <td>
@@ -584,17 +611,6 @@
                                     <col class="col-arrow" />
                                     <col class="col-round" />
                                 </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th>首轮</th>
-                                        <th></th>
-                                        <th>次轮</th>
-                                        <th></th>
-                                        <th>分区决赛</th>
-                                        <th></th>
-                                        <th>分区冠军</th>
-                                    </tr>
-                                </thead>
                                 <tbody>
                                     <tr>
                                         <td>
@@ -613,13 +629,15 @@
                                                 data-conf="west" data-source="m1" data-target="s1" tabindex="0"
                                                 role="button" aria-label="选择第一轮胜者进入西部第二轮"></div>
                                         </td>
-                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s1" rowspan="4"></td>
+                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s1" rowspan="4">
+                                        </td>
                                         <td rowspan="4">
                                             <div class="semi-card selectable-option is-selected" id="west-semi-s1"
                                                 data-conf="west" data-source="s1" data-target="final" tabindex="0"
                                                 role="button" aria-label="选择第二轮胜者进入西部决赛"></div>
                                         </td>
-                                        <td class="arrow-cell final-connector" id="west-final-connector" rowspan="8"></td>
+                                        <td class="arrow-cell final-connector" id="west-final-connector" rowspan="8">
+                                        </td>
                                         <td rowspan="8">
                                             <div class="champ-card selectable-option" id="west-champion"
                                                 data-league-source="west" tabindex="0" role="button"
@@ -679,7 +697,8 @@
                                                 data-source="m3" data-target="s2" tabindex="0" role="button"
                                                 aria-label="选择第一轮胜者进入西部第二轮"></div>
                                         </td>
-                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s2" rowspan="4"></td>
+                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s2" rowspan="4">
+                                        </td>
                                         <td rowspan="4">
                                             <div class="semi-card selectable-option" id="west-semi-s2" data-conf="west"
                                                 data-source="s2" data-target="final" tabindex="0" role="button"
@@ -745,17 +764,6 @@
                                     <col class="col-arrow" />
                                     <col class="col-team" />
                                 </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th>分区冠军</th>
-                                        <th></th>
-                                        <th>分区决赛</th>
-                                        <th></th>
-                                        <th>次轮</th>
-                                        <th></th>
-                                        <th>首轮</th>
-                                    </tr>
-                                </thead>
                                 <tbody>
                                     <tr>
                                         <td rowspan="8">
@@ -763,13 +771,15 @@
                                                 data-league-source="east" tabindex="0" role="button"
                                                 aria-label="选择东部冠军为总冠军"><strong class="empty-slot">东部冠军</strong></div>
                                         </td>
-                                        <td class="arrow-cell final-connector" id="east-final-connector" rowspan="8"></td>
+                                        <td class="arrow-cell final-connector" id="east-final-connector" rowspan="8">
+                                        </td>
                                         <td rowspan="4">
                                             <div class="semi-card selectable-option is-selected" id="east-semi-s1"
                                                 data-conf="east" data-source="s1" data-target="final" tabindex="0"
                                                 role="button" aria-label="选择第二轮胜者进入东部决赛"></div>
                                         </td>
-                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s1" rowspan="4"></td>
+                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s1" rowspan="4">
+                                        </td>
                                         <td rowspan="2">
                                             <div class="win-card selectable-option is-selected" id="east-winner-m1"
                                                 data-conf="east" data-source="m1" data-target="s1" tabindex="0"
@@ -827,7 +837,8 @@
                                                 data-source="s2" data-target="final" tabindex="0" role="button"
                                                 aria-label="选择第二轮胜者进入东部决赛"></div>
                                         </td>
-                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s2" rowspan="4"></td>
+                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s2" rowspan="4">
+                                        </td>
                                         <td rowspan="2">
                                             <div class="win-card selectable-option" id="east-winner-m2" data-conf="east"
                                                 data-source="m2" data-target="s2" tabindex="0" role="button"
@@ -890,13 +901,6 @@
                 <div class="playin-panel east-playin">
                     <p class="conference-title">东部附加赛</p>
                     <table class="playin-table" aria-label="东部附加赛树状图">
-                        <thead>
-                            <tr>
-                                <th>比赛结果</th>
-                                <th></th>
-                                <th>附加赛对阵</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             <tr>
                                 <td rowspan="2">
@@ -1005,7 +1009,7 @@
 
         const brackets = {
             west: {
-                state: { m1: 'thunder', m2: 'rockets', m3: 'spurs', m4: 'nuggets', s1: 'thunder', s2: null, final: null },
+                state: { m1: null, m2: null, m3: null, m4: null, s1: null, s2: null, final: null },
                 groups: { s1: ['m1', 'm2'], s2: ['m3', 'm4'] },
                 ids: {
                     winners: { m1: 'west-winner-m1', m2: 'west-winner-m2', m3: 'west-winner-m3', m4: 'west-winner-m4' },
@@ -1017,7 +1021,7 @@
                 }
             },
             east: {
-                state: { m1: 'pistons', m2: 'celtics', m3: 'knicks', m4: 'cavaliers', s1: 'pistons', s2: null, final: null },
+                state: { m1: null, m2: null, m3: null, m4: null, s1: null, s2: null, final: null },
                 groups: { s1: ['m1', 'm4'], s2: ['m2', 'm3'] },
                 ids: {
                     winners: { m1: 'east-winner-m1', m2: 'east-winner-m2', m3: 'east-winner-m3', m4: 'east-winner-m4' },
@@ -1033,13 +1037,13 @@
         const westPlayIn = {
             g78Winner: 'suns',
             g910Winner: 'clippers',
-            g8Winner: 'clippers'
+            g8Winner: 'blazers'
         };
 
         const eastPlayIn = {
             g78Winner: 'sixers',
             g910Winner: 'hornets',
-            g8Winner: 'hornets'
+            g8Winner: 'magic'
         };
 
         const leagueState = {
@@ -1160,11 +1164,11 @@
             const { state, ids, groups } = bracket;
 
             Object.entries(ids.winners).forEach(([matchKey, elementId]) => {
-                document.getElementById(elementId).innerHTML = teamMarkup(state[matchKey], '待选择');
+                document.getElementById(elementId).innerHTML = teamMarkup(state[matchKey], '首轮胜者待定');
             });
 
-            document.getElementById(ids.semis.s1).innerHTML = teamMarkup(state.s1, '第二轮胜者');
-            document.getElementById(ids.semis.s2).innerHTML = teamMarkup(state.s2, '胜者2');
+            document.getElementById(ids.semis.s1).innerHTML = teamMarkup(state.s1, '次轮胜者待定');
+            document.getElementById(ids.semis.s2).innerHTML = teamMarkup(state.s2, '次轮胜者待定');
             document.getElementById(ids.champion).innerHTML = teamMarkup(state.final, ids.championFallback);
 
             document.querySelectorAll('[data-conf="' + conf + '"][data-match]').forEach((el) => {
@@ -1173,7 +1177,7 @@
 
             Object.entries(ids.winners).forEach(([matchKey, elementId]) => {
                 const selectedKey = groups.s1.includes(matchKey) ? state.s1 : state.s2;
-                document.getElementById(elementId).classList.toggle('is-selected', selectedKey === state[matchKey]);
+                document.getElementById(elementId).classList.toggle('is-selected', !!state[matchKey] && selectedKey === state[matchKey]);
             });
 
             document.getElementById(ids.semis.s1).classList.toggle('is-selected', state.final === state.s1 && !!state.s1);
@@ -1254,7 +1258,13 @@
             layout.style.transform = 'none';
             layout.style.transformOrigin = 'top left';
 
+            // Temporarily shrink to max-content to measure the true content width
+            // (layout is normally width:100%, so scrollWidth would equal clientWidth)
+            const prevWidth = layout.style.width;
+            layout.style.width = 'max-content';
             const naturalWidth = layout.scrollWidth;
+            layout.style.width = prevWidth;
+
             const sectionStyle = window.getComputedStyle(section);
             const paddingLeft = parseFloat(sectionStyle.paddingLeft) || 0;
             const paddingRight = parseFloat(sectionStyle.paddingRight) || 0;
