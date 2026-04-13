@@ -7,14 +7,17 @@
     <title>NBA 季后赛对战图</title>
     <style>
         :root {
-            --bg: #f4f7fb;
+            --bg: #f3f6fb;
             --card: #ffffff;
             --text: #12263a;
             --muted: #5c6b7a;
             --accent: #1f7a8c;
             --accent-2: #ff7f11;
             --line: #d6dde7;
-            --slot-height: 102px;
+            --line-strong: #c4cfdd;
+            --surface-soft: #f8fbff;
+            --shadow-soft: 0 8px 22px rgba(18, 38, 58, 0.06);
+            --slot-height: 104px;
         }
 
         * {
@@ -25,14 +28,14 @@
             margin: 0;
             font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
             color: var(--text);
-            background: #ffffff;
+            background: linear-gradient(180deg, #f7f9fd 0%, #ffffff 180px);
             line-height: 1.6;
         }
 
         .container {
             max-width: 1640px;
             margin: 0 auto;
-            padding: 24px 12px 36px;
+            padding: 18px 18px 34px;
         }
 
         section {
@@ -40,7 +43,7 @@
             border: none;
             border-radius: 0;
             box-shadow: none;
-            padding: 16px;
+            padding: 18px;
             overflow-x: hidden;
         }
 
@@ -53,55 +56,58 @@
         .main-layout {
             display: grid;
             grid-template-columns: max-content max-content max-content;
-            gap: 10px;
+            gap: 12px;
             align-items: start;
             width: max-content;
             min-width: 100%;
         }
 
         .playin-panel {
-            min-width: 228px;
+            min-width: 220px;
         }
 
         .playin-panel.east-playin {
-            min-width: 228px;
+            min-width: 220px;
             padding-left: 0;
         }
 
         .playin-panel:not(.east-playin) {
-            min-width: 212px;
+            min-width: 206px;
         }
 
         .conference-title {
-            margin: 0 0 8px;
-            font-size: 1.14rem;
+            margin: 0 0 10px;
+            font-size: 1.06rem;
             font-weight: 700;
+            line-height: 1.35;
+            color: #1f3448;
+            letter-spacing: 0.01em;
         }
 
         .playin-table {
             width: max-content;
             border-collapse: separate;
-            border-spacing: 0 8px;
+            border-spacing: 0 10px;
         }
 
         .playin-table th,
         .playin-table td {
             border: none;
             background: transparent;
-            padding: 0 4px;
+            padding: 0 5px;
             text-align: left;
             vertical-align: middle;
-            font-size: 0.92rem;
+            font-size: 0.86rem;
             color: var(--muted);
         }
 
         .playin-table td {
-            font-size: 1.08rem;
+            font-size: 1.02rem;
             color: var(--text);
         }
 
         .playin-arrow-cell {
-            width: 22px;
+            width: 24px;
             text-align: center;
             color: transparent;
             font-size: 0;
@@ -118,7 +124,7 @@
             height: 50%;
             width: 1px;
             transform: translateX(-0.5px);
-            background: rgba(31, 122, 140, 0.22);
+            background: rgba(31, 122, 140, 0.26);
         }
 
         .playin-arrow-cell::after,
@@ -127,38 +133,40 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 12px;
+            width: 14px;
             height: 1px;
             transform: translateY(-0.5px);
-            background: rgba(31, 122, 140, 0.3);
+            background: rgba(31, 122, 140, 0.34);
         }
 
         .arrow-cell[rowspan],
         .playin-arrow-cell[rowspan] {
             background-image:
-                linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3)),
-                linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+                linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34)),
+                linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
             background-repeat: no-repeat;
-            background-size: 12px 1px, 12px 1px;
+            background-size: 14px 1px, 14px 1px;
             background-position:
-                calc(50% - 12px) 25%,
-                calc(50% - 12px) 75%;
+                calc(50% - 14px) 25%,
+                calc(50% - 14px) 75%;
         }
 
         .bracket-wrap {
             overflow: visible;
             padding-bottom: 6px;
             min-width: 0;
-            padding-left: 8px;
-            padding-right: 8px;
-            border-left: 1px solid var(--line);
-            border-right: 1px solid var(--line);
+            padding-left: 10px;
+            padding-right: 10px;
+            border-left: 1px dashed rgba(196, 207, 221, 0.75);
+            border-right: 1px dashed rgba(196, 207, 221, 0.75);
+            background: transparent;
+            border-radius: 0;
         }
 
         .conference-grid {
             display: grid;
             grid-template-columns: max-content max-content max-content;
-            gap: 12px;
+            gap: 14px;
             align-items: start;
             width: max-content;
         }
@@ -167,8 +175,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 140px;
-            padding-top: 210px;
+            min-width: 152px;
+            padding-top: 214px;
         }
 
         .league-champion {
@@ -179,19 +187,19 @@
         .bracket-table {
             width: max-content;
             border-collapse: separate;
-            border-spacing: 0 8px;
+            border-spacing: 0 10px;
         }
 
         .col-team {
-            width: 114px;
+            width: 118px;
         }
 
         .col-arrow {
-            width: 22px;
+            width: 24px;
         }
 
         .col-round {
-            width: 98px;
+            width: 104px;
         }
 
         .bracket-table th,
@@ -203,12 +211,13 @@
         .bracket-table th {
             text-align: left;
             color: var(--muted);
-            font-size: 0.92rem;
-            padding: 0 4px 4px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            padding: 0 5px 5px;
         }
 
         .bracket-table td {
-            padding: 0 4px;
+            padding: 0 5px;
             vertical-align: middle;
             text-align: left;
         }
@@ -258,24 +267,24 @@
         }
 
         .arrow-cell.is-top-only[rowspan] {
-            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
-            background-size: 12px 1px;
-            background-position: calc(50% - 12px) 25%;
+            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
+            background-size: 14px 1px;
+            background-position: calc(50% - 14px) 25%;
         }
 
         .arrow-cell.is-bottom-only[rowspan] {
-            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
-            background-size: 12px 1px;
-            background-position: calc(50% - 12px) 75%;
+            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
+            background-size: 14px 1px;
+            background-position: calc(50% - 14px) 75%;
         }
 
         .conference-panel.east .arrow-cell.is-top-only[rowspan] {
-            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
             background-position: calc(50% + 6px) 25%;
         }
 
         .conference-panel.east .arrow-cell.is-bottom-only[rowspan] {
-            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
             background-position: calc(50% + 6px) 75%;
         }
 
@@ -288,20 +297,19 @@
         .win-card,
         .semi-card,
         .champ-card {
-            border: none;
-            border-radius: 0;
-            background: transparent;
-            padding: 4px 0;
+            border: 1px solid rgba(196, 207, 221, 0.5);
+            border-radius: 10px;
+            background: var(--surface-soft);
+            padding: 6px 10px;
             min-height: 0;
             display: inline-flex;
             flex-direction: column;
             justify-content: center;
-            line-height: 1.3;
-            box-shadow: none;
+            line-height: 1.25;
+            box-shadow: var(--shadow-soft);
             width: fit-content;
             min-width: 0;
             text-align: center;
-            border-radius: 8px;
             transition: opacity 120ms ease, background-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
         }
 
@@ -312,24 +320,27 @@
         .playin-table .team-card,
         .playin-table .win-card {
             min-height: 0;
+            padding-left: 8px;
+            padding-right: 8px;
         }
 
         .team-line {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             text-align: center;
         }
 
         .team-name {
             font-weight: 700;
-            font-size: 1.08rem;
+            font-size: 1rem;
+            line-height: 1.2;
         }
 
         .team-logo {
-            width: 64px;
-            height: 64px;
+            width: 58px;
+            height: 58px;
             object-fit: contain;
             flex-shrink: 0;
         }
@@ -342,15 +353,20 @@
 
         .selectable-option:hover {
             color: var(--accent);
-            transform: translateX(2px);
+            transform: translateY(-1px);
         }
 
         .selectable-option.is-selected {
             color: var(--accent-2);
             opacity: 1;
             filter: saturate(1);
-            background: rgba(255, 127, 17, 0.1);
-            box-shadow: inset 0 0 0 1px rgba(255, 127, 17, 0.28);
+            background: rgba(255, 127, 17, 0.11);
+            box-shadow: inset 0 0 0 1px rgba(255, 127, 17, 0.32), 0 6px 16px rgba(255, 127, 17, 0.16);
+        }
+
+        .selectable-option:focus-visible {
+            outline: 2px solid rgba(31, 122, 140, 0.45);
+            outline-offset: 2px;
         }
 
         .empty-slot {
@@ -361,18 +377,21 @@
         .win-card:has(.empty-slot),
         .semi-card:has(.empty-slot),
         .champ-card:has(.empty-slot) {
-            opacity: 0.6;
+            opacity: 0.68;
             filter: none;
+            background: #fbfdff;
+            box-shadow: none;
         }
 
         .empty-slot {
             color: var(--muted);
-            opacity: 0.7;
+            opacity: 0.8;
             font-weight: 600;
+            letter-spacing: 0.02em;
         }
 
         .arrow-cell {
-            width: 22px;
+            width: 24px;
             text-align: center;
             color: transparent;
             font-size: 0;
@@ -383,22 +402,24 @@
         .seed {
             display: block;
             color: var(--muted);
-            font-size: 0.88rem;
+            font-size: 0.8rem;
             text-align: center;
+            line-height: 1.2;
         }
 
         @media (max-width: 640px) {
             :root {
-                --slot-height: 92px;
+                --slot-height: 88px;
             }
 
             section {
+                padding: 12px;
                 overflow-x: visible;
             }
 
             .main-layout {
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 16px;
                 width: 100%;
                 min-width: 0;
             }
@@ -411,7 +432,7 @@
 
             .conference-grid {
                 grid-template-columns: max-content;
-                gap: 26px;
+                gap: 20px;
             }
 
             .playin-panel {
@@ -434,9 +455,21 @@
                 text-align: left;
             }
 
+            .conference-title {
+                margin-bottom: 8px;
+                font-size: 1rem;
+            }
+
+            .team-card,
+            .win-card,
+            .semi-card,
+            .champ-card {
+                padding: 6px 8px;
+            }
+
             .team-logo {
-                width: 68px;
-                height: 68px;
+                width: 60px;
+                height: 60px;
             }
         }
     </style>
