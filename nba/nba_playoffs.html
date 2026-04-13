@@ -54,12 +54,12 @@
         .main-layout {
             display: grid;
             grid-template-columns: max-content 1fr max-content;
-            gap: 16px;
+            gap: 10px;
             align-items: start;
         }
 
         .playin-panel {
-            min-width: 230px;
+            min-width: 190px;
         }
 
         .conference-title {
@@ -99,17 +99,20 @@
         }
 
         .bracket-wrap {
-            overflow-x: auto;
-            padding-bottom: 6px;
+            overflow: hidden;
+            padding-bottom: 0;
             min-width: 0;
+            --bracket-scale: 1;
         }
 
         .conference-grid {
             display: grid;
             grid-template-columns: max-content max-content max-content;
-            gap: 20px;
+            gap: 12px;
             align-items: start;
             width: max-content;
+            transform: scale(var(--bracket-scale));
+            transform-origin: top left;
         }
 
         .finals-panel {
@@ -132,7 +135,7 @@
         }
 
         .col-team {
-            width: 108px;
+            width: 94px;
         }
 
         .col-arrow {
@@ -140,7 +143,7 @@
         }
 
         .col-round {
-            width: 92px;
+            width: 80px;
         }
 
         .bracket-table th,
@@ -1051,6 +1054,26 @@
             normalizeLeagueChampion();
         }
 
+        function fitBracketToViewport() {
+            const mainLayout = document.querySelector('.main-layout');
+            const bracketWrap = document.querySelector('.bracket-wrap');
+            const conferenceGrid = document.querySelector('.conference-grid');
+            if (!mainLayout || !bracketWrap || !conferenceGrid || mainLayout.children.length < 3) return;
+
+            bracketWrap.style.setProperty('--bracket-scale', '1');
+
+            const leftPanel = mainLayout.children[0];
+            const rightPanel = mainLayout.children[2];
+            const style = getComputedStyle(mainLayout);
+            const gap = parseFloat(style.columnGap || style.gap || '0');
+            const available = mainLayout.clientWidth - leftPanel.offsetWidth - rightPanel.offsetWidth - gap * 2;
+            const required = conferenceGrid.scrollWidth;
+
+            if (required <= 0 || available <= 0) return;
+            const scale = Math.min(1, available / required);
+            bracketWrap.style.setProperty('--bracket-scale', String(scale));
+        }
+
         document.querySelectorAll('[data-playin-conf][data-playin-game]').forEach((el) => {
             const choose = () => {
                 const conf = el.dataset.playinConf;
@@ -1077,6 +1100,7 @@
                 }
 
                 renderLeagueChampion();
+                fitBracketToViewport();
             };
 
             el.addEventListener('click', choose);
@@ -1095,6 +1119,7 @@
                 normalizeConference(conf);
                 renderConference(conf);
                 renderLeagueChampion();
+                fitBracketToViewport();
             };
 
             el.addEventListener('click', choose);
@@ -1118,6 +1143,7 @@
                 normalizeConference(conf);
                 renderConference(conf);
                 renderLeagueChampion();
+                fitBracketToViewport();
             };
 
             el.addEventListener('click', choose);
@@ -1137,6 +1163,7 @@
                 renderLeagueChampion();
                 renderConference('west');
                 renderConference('east');
+                fitBracketToViewport();
             };
 
             el.addEventListener('click', choose);
@@ -1153,6 +1180,8 @@
         renderConference('west');
         renderConference('east');
         renderLeagueChampion();
+        fitBracketToViewport();
+        window.addEventListener('resize', fitBracketToViewport);
     </script>
 </body>
 
