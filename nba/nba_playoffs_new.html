@@ -248,36 +248,44 @@
         .league-champion {
             padding: 6px 10px;
             border-radius: 10px;
-            width: 100%;
+            width: calc(var(--round-w) * 2 + var(--gap-w));
+            max-width: calc(var(--round-w) * 2 + var(--gap-w));
             min-height: 112px;
         }
 
         .league-champion .team-logo {
             width: 48px;
             height: 48px;
-
-            .conference-champion {
-                width: calc(100% + 48px);
-                max-width: 158px;
-            }
-
-            .conference-champion--west {
-                --shift-x: 24px;
-            }
-
-            .conference-champion--east {
-                --shift-x: -24px;
-            }
         }
 
         .league-champion .team-name {
             font-size: 1rem;
         }
 
+        .conference-champion {
+            width: calc(100% + 48px);
+            max-width: 158px;
+        }
+
+        .conference-champion--west {
+            transform: translate(24px, 0);
+        }
+
+        .conference-champion--east {
+            transform: translate(-24px, 0);
+        }
+
+        .conference-champion--west:hover {
+            transform: translate(24px, -1px);
+        }
+
+        .conference-champion--east:hover {
+            transform: translate(-24px, -1px);
+        }
+
         /* ═══════════════════════════════════
            CONNECTOR LINES  (CSS borders)
            ═══════════════════════════════════
-            transform: translate(var(--shift-x, 0), -1px);
            .conn-r1     — spans 2 rows (first round pair)
            .conn-semi   — spans 4 rows
            .conn-final  — spans 8 rows
