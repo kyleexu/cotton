@@ -4,6 +4,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+        (function redirectToMobileVersion() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('desktop')) return;
+
+            const isMobileWidth = window.matchMedia('(max-width: 820px)').matches;
+            const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (!isMobileWidth && !isMobileAgent) return;
+
+            const targetPath = window.location.pathname.replace(/nba_playoffs_new\.html$/, 'nba_playoffs_new_mobile.html');
+            if (targetPath === window.location.pathname) return;
+
+            window.location.replace(targetPath + window.location.search + window.location.hash);
+        })();
+    </script>
     <title>NBA 季后赛对战图</title>
     <style>
         :root {
@@ -14,365 +29,152 @@
             --accent: #1f7a8c;
             --accent-2: #ff7f11;
             --line: #d6dde7;
-            --line-strong: #c4cfdd;
+            --line-clr: rgba(31, 122, 140, 0.30);
             --surface-soft: #f8fbff;
             --shadow-soft: 0 8px 22px rgba(18, 38, 58, 0.06);
-            --slot-height: 104px;
-            --space-2xs: 4px;
-            --space-xs: 6px;
-            --space-sm: 8px;
-            --space-md: 12px;
-            --space-lg: 16px;
-            --space-xl: 20px;
-            --space-2xl: 32px;
+            --cell-h: 104px;
+            --team-w: 120px;
+            --conn-w: 28px;
+            --round-w: 110px;
+            --center-gap-w: 6px;
+            --outer-gap-w: 18px;
+            --champ-w: 140px;
         }
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
             font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
             color: var(--text);
             background: linear-gradient(180deg, #f7f9fd 0%, #ffffff 180px);
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
-        .page-header {
-            padding: var(--space-2xl) var(--space-2xl) var(--space-xl);
-            background: linear-gradient(135deg, #071525 0%, #0e2640 55%, #1a3a5c 100%);
-            text-align: center;
-            border-bottom: 1px solid rgba(31, 122, 140, 0.25);
-        }
-
-        .page-title {
-            margin: 0 0 var(--space-2xs);
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            color: #e8f0fa;
-        }
-
-        .page-subtitle {
-            margin: 0;
-            font-size: 0.86rem;
-            color: rgba(200, 220, 245, 0.6);
-            letter-spacing: 0.02em;
-        }
-
+        /* ── Section container ── */
         .container {
-            width: 100%;
-            max-width: none;
-            margin: 0;
-            padding: var(--space-lg) var(--space-xl) var(--space-2xl);
+            padding: 28px 20px 32px;
         }
 
         section {
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
-            padding: var(--space-lg);
+            padding: 16px;
             overflow-x: hidden;
         }
 
-        .hint {
-            margin: 0 0 var(--space-sm);
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        .main-layout {
+        /* ══════════════════════════════════════
+           BRACKET GRID — the "Excel sheet"
+           ══════════════════════════════════════
+           25 columns × (1 header + 8 data) rows.
+           Every element sits at an explicit grid cell.
+        */
+        .bracket-grid {
             display: grid;
-            grid-template-columns: max-content 1fr max-content;
-            gap: var(--space-2xl);
-            align-items: start;
-            width: 100%;
-            justify-content: space-between;
+            grid-template-columns:
+                var(--team-w)
+                /* 1  wp-team  */
+                var(--conn-w)
+                /* 2  wp-conn  */
+                var(--round-w)
+                /* 3  wp-result */
+                var(--outer-gap-w)
+                /* 4  gap1 */
+                var(--team-w)
+                /* 5  wr1-team */
+                var(--conn-w)
+                /* 6  wr1-conn */
+                var(--round-w)
+                /* 7  wr1-win  */
+                var(--conn-w)
+                /* 8  ws-conn  */
+                var(--round-w)
+                /* 9  ws-win   */
+                var(--conn-w)
+                /* 10 wf-conn  */
+                var(--round-w)
+                /* 11 wf-champ */
+                var(--center-gap-w)
+                /* 12 gap2 */
+                var(--champ-w)
+                /* 13 champ    */
+                var(--center-gap-w)
+                /* 14 gap3 */
+                var(--round-w)
+                /* 15 ef-champ */
+                var(--conn-w)
+                /* 16 ef-conn  */
+                var(--round-w)
+                /* 17 es-win   */
+                var(--conn-w)
+                /* 18 es-conn  */
+                var(--round-w)
+                /* 19 er1-win  */
+                var(--conn-w)
+                /* 20 er1-conn */
+                var(--team-w)
+                /* 21 er1-team */
+                var(--outer-gap-w)
+                /* 22 gap4 */
+                var(--round-w)
+                /* 23 ep-result */
+                var(--conn-w)
+                /* 24 ep-conn  */
+                var(--team-w);
+            /* 25 ep-team  */
+            grid-template-rows:
+                auto repeat(8, var(--cell-h));
+            row-gap: 8px;
+            width: max-content;
+            transform-origin: top left;
         }
 
-        .playin-panel {
-            min-width: 220px;
-        }
-
-        .playin-panel.east-playin {
-            min-width: 220px;
-            padding-left: 0;
-        }
-
-        .playin-panel:not(.east-playin) {
-            min-width: 206px;
-        }
-
-        .conference-title {
-            margin: 0 0 var(--space-md);
+        /* ── Header labels ── */
+        .grid-header {
+            grid-row: 1;
             font-size: 1.06rem;
             font-weight: 700;
-            line-height: 1.35;
             color: #1f3448;
-            letter-spacing: 0.01em;
+            padding: 0 0 8px;
+            white-space: nowrap;
         }
 
-        .playin-table {
-            width: max-content;
-            border-collapse: separate;
-            border-spacing: 0 var(--space-md);
-        }
-
-        .playin-table th,
-        .playin-table td {
-            border: none;
-            background: transparent;
-            padding: 0 var(--space-xs);
-            text-align: left;
-            vertical-align: middle;
-            font-size: 0.86rem;
-            color: var(--muted);
-        }
-
-        .playin-table td {
-            font-size: 1.02rem;
-            color: var(--text);
-        }
-
-        .playin-arrow-cell {
-            width: 24px;
-            text-align: center;
-            color: transparent;
-            font-size: 0;
-            position: relative;
-            opacity: 1;
-        }
-
-        .playin-arrow-cell::before,
-        .arrow-cell::before {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 25%;
-            height: 50%;
-            width: 1px;
-            transform: translateX(-0.5px);
-            background: rgba(31, 122, 140, 0.26);
-        }
-
-        .playin-arrow-cell::after,
-        .arrow-cell::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 14px;
-            height: 1px;
-            transform: translateY(-0.5px);
-            background: rgba(31, 122, 140, 0.34);
-        }
-
-        .arrow-cell[rowspan],
-        .playin-arrow-cell[rowspan] {
-            background-image:
-                linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34)),
-                linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
-            background-repeat: no-repeat;
-            background-size: 14px 1px, 14px 1px;
-            background-position:
-                calc(50% - 14px) 25%,
-                calc(50% - 14px) 75%;
-        }
-
-        .bracket-wrap {
-            overflow: visible;
-            padding-bottom: var(--space-xs);
-            min-width: 0;
-            padding-left: var(--space-md);
-            padding-right: var(--space-md);
-            border-left: 1px solid rgba(196, 207, 221, 0.5);
-            border-right: 1px solid rgba(196, 207, 221, 0.5);
-            background: rgba(248, 251, 255, 0.5);
-            border-radius: 0;
+        /* ── Generic cell wrapper ── */
+        .cell {
             display: flex;
-            justify-content: center;
-        }
-
-        .conference-grid {
-            display: grid;
-            grid-template-columns: max-content max-content max-content;
-            gap: var(--space-lg);
-            align-items: stretch;
-            width: max-content;
-        }
-
-        .finals-panel {
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 180px;
+            padding: 4px;
         }
 
-        .league-champion {
-            align-items: center;
-            text-align: center;
-            padding: var(--space-lg) var(--space-2xl);
-            border-radius: 14px;
-            min-width: 180px;
-        }
-
-        .league-champion .team-logo {
-            width: 120px;
-            height: 120px;
-        }
-
-        .league-champion .team-name {
-            font-size: 1.5rem;
-        }
-
-        .bracket-table {
-            width: max-content;
-            border-collapse: separate;
-            border-spacing: 0 var(--space-md);
-        }
-
-        .col-team {
-            width: 118px;
-        }
-
-        .col-arrow {
-            width: 24px;
-        }
-
-        .col-round {
-            width: 104px;
-        }
-
-        .bracket-table th,
-        .bracket-table td {
-            border: none;
-            background: transparent;
-        }
-
-        .bracket-table th {
-            text-align: left;
-            color: var(--muted);
-            font-size: 0.86rem;
-            font-weight: 600;
-            padding: 0 var(--space-xs) var(--space-xs);
-        }
-
-        .bracket-table td {
-            padding: 0 var(--space-xs);
-            vertical-align: middle;
-            text-align: left;
-        }
-
-        .bracket-table tbody tr {
-            height: var(--slot-height);
-        }
-
-        .conference-panel.east .bracket-table th,
-        .conference-panel.east .bracket-table td {
-            text-align: right;
-        }
-
-        .conference-panel.east .conference-title {
-            text-align: right;
-        }
-
-        .conference-panel.east .seed {
-            align-self: center;
-        }
-
-        .conference-panel.east .team-card,
-        .conference-panel.east .win-card,
-        .conference-panel.east .semi-card,
-        .conference-panel.east .champ-card {
-            align-items: flex-end;
-        }
-
-        .conference-panel.east .arrow-cell {
-            text-align: center;
-        }
-
-        .conference-panel.east .arrow-cell::after,
-        .playin-panel.east-playin .playin-arrow-cell::after {
-            left: auto;
-            right: 50%;
-        }
-
-        .conference-panel.east .arrow-cell[rowspan],
-        .playin-panel.east-playin .playin-arrow-cell[rowspan] {
-            background-image:
-                linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3)),
-                linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
-            background-position:
-                calc(50% + 6px) 25%,
-                calc(50% + 6px) 75%;
-        }
-
-        .arrow-cell.is-top-only[rowspan] {
-            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
-            background-size: 14px 1px;
-            background-position: calc(50% - 14px) 25%;
-        }
-
-        .arrow-cell.is-bottom-only[rowspan] {
-            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
-            background-size: 14px 1px;
-            background-position: calc(50% - 14px) 75%;
-        }
-
-        .conference-panel.east .arrow-cell.is-top-only[rowspan] {
-            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
-            background-position: calc(50% + 6px) 25%;
-        }
-
-        .conference-panel.east .arrow-cell.is-bottom-only[rowspan] {
-            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.34), rgba(31, 122, 140, 0.34));
-            background-position: calc(50% + 6px) 75%;
-        }
-
-        .playin-panel.east-playin .conference-title {
-            text-align: right;
-            margin: 0 0 var(--space-md) 0;
-        }
-
+        /* ── Card base ── */
         .team-card,
         .win-card,
         .semi-card,
         .champ-card {
-            border: 1px solid rgba(196, 207, 221, 0.5);
+            border: 1px solid rgba(196, 207, 221, .5);
             border-radius: 10px;
             background: var(--surface-soft);
-            padding: var(--space-sm) var(--space-md);
-            min-height: 0;
+            padding: 8px 12px;
             display: inline-flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
+            text-align: center;
             line-height: 1.25;
             box-shadow: var(--shadow-soft);
-            width: fit-content;
-            min-width: 0;
-            text-align: center;
-            transition: opacity 120ms ease, background-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
-        }
-
-        .team-card {
-            min-height: calc(var(--slot-height) - 8px);
-        }
-
-        .playin-table .team-card,
-        .playin-table .win-card {
-            min-height: 0;
-            padding-left: var(--space-sm);
-            padding-right: var(--space-sm);
+            width: 100%;
+            height: fit-content;
+            transition: opacity 120ms ease, background-color 120ms ease,
+                box-shadow 120ms ease, transform 120ms ease;
         }
 
         .team-line {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
-            gap: var(--space-sm);
+            gap: 6px;
             text-align: center;
         }
 
@@ -383,10 +185,18 @@
         }
 
         .team-logo {
-            width: 76px;
-            height: 76px;
+            width: 56px;
+            height: 56px;
             object-fit: contain;
             flex-shrink: 0;
+        }
+
+        .seed {
+            display: block;
+            color: var(--muted);
+            font-size: .8rem;
+            text-align: center;
+            line-height: 1.2;
         }
 
         .selectable-option {
@@ -404,593 +214,612 @@
             color: var(--accent-2);
             opacity: 1;
             filter: saturate(1);
-            background: rgba(255, 127, 17, 0.11);
-            box-shadow: inset 0 0 0 1px rgba(255, 127, 17, 0.32), 0 6px 16px rgba(255, 127, 17, 0.16);
+            background: rgba(255, 127, 17, .11);
+            box-shadow: inset 0 0 0 1px rgba(255, 127, 17, .32), 0 6px 16px rgba(255, 127, 17, .16);
         }
 
         .selectable-option:focus-visible {
-            outline: 2px solid rgba(31, 122, 140, 0.45);
+            outline: 2px solid rgba(31, 122, 140, .45);
             outline-offset: 2px;
         }
 
         .empty-slot {
-            opacity: 0.8;
+            color: var(--muted);
+            opacity: .8;
+            font-weight: 600;
+            letter-spacing: .02em;
         }
 
         .team-card:has(.empty-slot),
         .win-card:has(.empty-slot),
         .semi-card:has(.empty-slot),
         .champ-card:has(.empty-slot) {
-            opacity: 0.68;
-            filter: none;
+            opacity: .68;
             background: #fbfdff;
             box-shadow: none;
         }
 
-        .empty-slot {
-            color: var(--muted);
-            opacity: 0.8;
-            font-weight: 600;
-            letter-spacing: 0.02em;
+        /* ── NBA Champion (center) ── */
+        .league-champion {
+            padding: 14px 10px;
+            border-radius: 10px;
+            width: calc(var(--round-w) * 2 + var(--center-gap-w));
+            max-width: calc(var(--round-w) * 2 + var(--center-gap-w));
+            min-height: 148px;
         }
 
-        .arrow-cell {
-            width: 24px;
-            text-align: center;
-            color: transparent;
-            font-size: 0;
+        .league-champion .team-logo {
+            width: 96px;
+            height: 96px;
+        }
+
+        .league-champion .team-name {
+            font-size: 1.08rem;
+        }
+
+        .conference-champion {
+            width: calc(100% + 48px);
+            max-width: 158px;
+        }
+
+        .conference-champion--west {
+            transform: translate(24px, 0);
+        }
+
+        .conference-champion--east {
+            transform: translate(-24px, 0);
+        }
+
+        .conference-champion--west:hover {
+            transform: translate(24px, -1px);
+        }
+
+        .conference-champion--east:hover {
+            transform: translate(-24px, -1px);
+        }
+
+        /* ═══════════════════════════════════
+           CONNECTOR LINES  (CSS borders)
+           ═══════════════════════════════════
+           .conn-r1     — spans 2 rows (first round pair)
+           .conn-semi   — spans 4 rows
+           .conn-final  — spans 8 rows
+           .conn-playin — spans 2 rows (play-in pair)
+
+           Arms: ::after = top arm, .arm-bottom = bottom arm
+           ::before = vertical bar connecting the two arms
+           West: arms extend RIGHT (left:50% → right:0)
+           East (.conn-east): arms extend LEFT (left:0 → right:50%)
+        */
+        .conn {
             position: relative;
-            opacity: 1;
+            width: 100%;
+            height: 100%;
         }
 
-        .seed {
-            display: block;
-            color: var(--muted);
-            font-size: 0.8rem;
-            text-align: center;
-            line-height: 1.2;
+        .conn::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: var(--line-clr);
         }
 
+        .conn::after {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 0;
+            right: 50%;
+            height: 1px;
+            background: var(--line-clr);
+        }
+
+        .conn .arm-bottom {
+            position: absolute;
+            bottom: 25%;
+            left: 0;
+            right: 50%;
+            height: 1px;
+            background: var(--line-clr);
+        }
+
+        /* Middle arm: from vertical bar center toward the winner card */
+        .conn .arm-mid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            right: 0;
+            height: 1px;
+            background: var(--line-clr);
+        }
+
+        /* East side: arms go RIGHT (toward teams on the right) */
+        .conn-east::after {
+            left: 50%;
+            right: 0;
+        }
+
+        .conn-east .arm-bottom {
+            left: 50% !important;
+            right: 0 !important;
+        }
+
+        .conn-east .arm-mid {
+            left: 0 !important;
+            right: 50% !important;
+        }
+
+
+
+        /* ── Responsive ── */
         @media (max-width: 640px) {
             :root {
-                --slot-height: 88px;
+                --cell-h: 88px;
             }
 
             section {
-                padding: var(--space-md);
-                overflow-x: visible;
-            }
-
-            .main-layout {
-                grid-template-columns: 1fr;
-                gap: var(--space-lg);
-                width: 100%;
-                min-width: 0;
-            }
-
-            .playin-panel,
-            .bracket-wrap {
                 overflow-x: auto;
-                overflow-y: hidden;
-            }
-
-            .conference-grid {
-                grid-template-columns: max-content;
-                gap: var(--space-xl);
-            }
-
-            .playin-panel {
-                min-width: 0;
-            }
-
-            .playin-panel.east-playin {
-                min-width: 0;
-                padding-left: 0;
-            }
-
-            .finals-panel {
-                min-width: 0;
-                align-items: flex-start;
-                justify-content: flex-start;
-            }
-
-            .league-champion {
-                align-items: flex-start;
-                text-align: left;
-            }
-
-            .conference-title {
-                margin-bottom: var(--space-sm);
-                font-size: 1rem;
-            }
-
-            .team-card,
-            .win-card,
-            .semi-card,
-            .champ-card {
-                padding: var(--space-xs) var(--space-sm);
-            }
-
-            .team-logo {
-                width: 60px;
-                height: 60px;
             }
         }
     </style>
 </head>
 
 <body>
-    <header class="page-header">
-        <h1 class="page-title">NBA 季后赛对战图</h1>
-        <p class="page-subtitle">2025&ndash;26 赛季 &middot; 点击队名选择晋级球队</p>
-    </header>
     <main class="container">
         <section>
-            <div class="main-layout">
-                <div class="playin-panel">
-                    <p class="conference-title">西部附加赛</p>
-                    <table class="playin-table" aria-label="西部附加赛树状图">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option is-selected" data-playin-conf="west"
-                                        data-playin-game="g78" data-team="suns" tabindex="0" role="button"
-                                        aria-label="选择太阳赢下西部7/8附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612756/global/L/logo.svg"
-                                                alt="太阳 logo" /><span class="team-name">太阳</span></strong><span
-                                            class="seed">7名</span>
-                                    </div>
-                                </td>
-                                <td class="playin-arrow-cell" rowspan="2"></td>
-                                <td rowspan="2">
-                                    <div class="win-card" id="west-playin-seed7"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option" data-playin-conf="west"
-                                        data-playin-game="g78" data-team="blazers" tabindex="0" role="button"
-                                        aria-label="选择开拓者赢下西部7/8附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612757/global/L/logo.svg"
-                                                alt="开拓者 logo" /><span class="team-name">开拓者</span></strong><span
-                                            class="seed">8名</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option is-selected" data-playin-conf="west"
-                                        data-playin-game="g910" data-team="clippers" tabindex="0" role="button"
-                                        aria-label="选择快船赢下西部9/10附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612746/global/L/logo.svg"
-                                                alt="快船 logo" /><span class="team-name">快船</span></strong><span
-                                            class="seed">9名</span>
-                                    </div>
-                                </td>
-                                <td class="playin-arrow-cell" rowspan="2"></td>
-                                <td rowspan="2">
-                                    <div class="win-card" id="west-playin-g910"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option" data-playin-conf="west"
-                                        data-playin-game="g910" data-team="warriors" tabindex="0" role="button"
-                                        aria-label="选择勇士赢下西部9/10附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612744/global/L/logo.svg"
-                                                alt="勇士 logo" /><span class="team-name">勇士</span></strong><span
-                                            class="seed">10名</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option" id="west-playin-g8-a"
-                                        data-playin-conf="west" data-playin-game="g8" tabindex="0" role="button"
-                                        aria-label="选择7/8败者赢下第8争夺战"></div>
-                                </td>
-                                <td class="playin-arrow-cell" rowspan="2"></td>
-                                <td rowspan="2">
-                                    <div class="win-card" id="west-playin-seed8"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option" id="west-playin-g8-b"
-                                        data-playin-conf="west" data-playin-game="g8" tabindex="0" role="button"
-                                        aria-label="选择910胜者赢下第8争夺战"></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="bracket-grid" id="bracket-grid">
+
+                <!-- ═══ ROW 1: HEADER LABELS ═══ -->
+                <div class="grid-header" style="grid-row:1; grid-column:1/4;">西部附加赛</div>
+                <div class="grid-header" style="grid-row:1; grid-column:5;">西部</div>
+                <div class="grid-header"
+                    style="grid-row:1; grid-column:11/16; text-align:center; line-height:1; padding-bottom:2px;">总冠军
+                </div>
+                <div class="grid-header" style="grid-row:1; grid-column:21; text-align:right;">东部</div>
+                <div class="grid-header" style="grid-row:1; grid-column:23/26; text-align:right;">东部附加赛</div>
+
+                <!-- Vertical dividers between play-in and bracket -->
+                <div style="grid-row:1/11; grid-column:4; border-right:1px solid var(--line); justify-self:center;">
+                </div>
+                <div style="grid-row:1/11; grid-column:22; border-left:1px solid var(--line); justify-self:center;">
                 </div>
 
-                <div class="bracket-wrap">
-                    <div class="conference-grid">
-                        <div class="conference-panel west">
-                            <p class="conference-title">西部</p>
-                            <table class="bracket-table" aria-label="西部对战树">
-                                <colgroup>
-                                    <col class="col-team" />
-                                    <col class="col-arrow" />
-                                    <col class="col-round" />
-                                    <col class="col-arrow" />
-                                    <col class="col-round" />
-                                    <col class="col-arrow" />
-                                    <col class="col-round" />
-                                </colgroup>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="west"
-                                                data-match="m1" data-team="thunder" tabindex="0" role="button"
-                                                aria-label="选择雷霆为西部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612760/global/L/logo.svg"
-                                                        alt="雷霆 logo" /><span class="team-name">雷霆</span></strong><span
-                                                    class="seed">第1</span>
-                                            </div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option is-selected" id="west-winner-m1"
-                                                data-conf="west" data-source="m1" data-target="s1" tabindex="0"
-                                                role="button" aria-label="选择第一轮胜者进入西部第二轮"></div>
-                                        </td>
-                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s1" rowspan="4">
-                                        </td>
-                                        <td rowspan="4">
-                                            <div class="semi-card selectable-option is-selected" id="west-semi-s1"
-                                                data-conf="west" data-source="s1" data-target="final" tabindex="0"
-                                                role="button" aria-label="选择第二轮胜者进入西部决赛"></div>
-                                        </td>
-                                        <td class="arrow-cell final-connector" id="west-final-connector" rowspan="8">
-                                        </td>
-                                        <td rowspan="8">
-                                            <div class="champ-card selectable-option" id="west-champion"
-                                                data-league-source="west" tabindex="0" role="button"
-                                                aria-label="选择西部冠军为总冠军"><strong class="empty-slot">西部冠军</strong></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" id="west-seed8-card"
-                                                data-conf="west" data-match="m1" data-team="westPlayin8" tabindex="0"
-                                                role="button" aria-label="选择第8为西部首轮胜者"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" data-conf="west" data-match="m2"
-                                                data-team="lakers" tabindex="0" role="button" aria-label="选择湖人为西部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612747/global/L/logo.svg"
-                                                        alt="湖人 logo" /><span class="team-name">湖人</span></strong><span
-                                                    class="seed">第4</span>
-                                            </div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option" id="west-winner-m2" data-conf="west"
-                                                data-source="m2" data-target="s1" tabindex="0" role="button"
-                                                aria-label="选择第一轮胜者进入西部第二轮"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="west"
-                                                data-match="m2" data-team="rockets" tabindex="0" role="button"
-                                                aria-label="选择火箭为西部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612745/global/L/logo.svg"
-                                                        alt="火箭 logo" /><span class="team-name">火箭</span></strong><span
-                                                    class="seed">第5</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="west"
-                                                data-match="m3" data-team="spurs" tabindex="0" role="button"
-                                                aria-label="选择马刺为西部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612759/global/L/logo.svg"
-                                                        alt="马刺 logo" /><span class="team-name">马刺</span></strong><span
-                                                    class="seed">第2</span>
-                                            </div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option" id="west-winner-m3" data-conf="west"
-                                                data-source="m3" data-target="s2" tabindex="0" role="button"
-                                                aria-label="选择第一轮胜者进入西部第二轮"></div>
-                                        </td>
-                                        <td class="arrow-cell semi-connector" id="west-semi-connector-s2" rowspan="4">
-                                        </td>
-                                        <td rowspan="4">
-                                            <div class="semi-card selectable-option" id="west-semi-s2" data-conf="west"
-                                                data-source="s2" data-target="final" tabindex="0" role="button"
-                                                aria-label="选择第二轮胜者进入西部决赛"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" id="west-seed7-card"
-                                                data-conf="west" data-match="m3" data-team="westPlayin7" tabindex="0"
-                                                role="button" aria-label="选择第7为西部首轮胜者"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="west"
-                                                data-match="m4" data-team="nuggets" tabindex="0" role="button"
-                                                aria-label="选择掘金为西部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612743/global/L/logo.svg"
-                                                        alt="掘金 logo" /><span class="team-name">掘金</span></strong><span
-                                                    class="seed">第3</span>
-                                            </div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option" id="west-winner-m4" data-conf="west"
-                                                data-source="m4" data-target="s2" tabindex="0" role="button"
-                                                aria-label="选择第一轮胜者进入西部第二轮"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" data-conf="west" data-match="m4"
-                                                data-team="wolves" tabindex="0" role="button" aria-label="选择森林狼为西部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612750/global/L/logo.svg"
-                                                        alt="森林狼 logo" /><span
-                                                        class="team-name">森林狼</span></strong><span
-                                                    class="seed">第6</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="finals-panel">
-                            <p class="conference-title" style="text-align:center">总冠军</p>
-                            <div class="champ-card league-champion" id="league-champion"><strong
-                                    class="empty-slot">总冠军</strong></div>
-                        </div>
-
-                        <div class="conference-panel east">
-                            <p class="conference-title">东部</p>
-                            <table class="bracket-table" aria-label="东部对战树">
-                                <colgroup>
-                                    <col class="col-round" />
-                                    <col class="col-arrow" />
-                                    <col class="col-round" />
-                                    <col class="col-arrow" />
-                                    <col class="col-round" />
-                                    <col class="col-arrow" />
-                                    <col class="col-team" />
-                                </colgroup>
-                                <tbody>
-                                    <tr>
-                                        <td rowspan="8">
-                                            <div class="champ-card selectable-option" id="east-champion"
-                                                data-league-source="east" tabindex="0" role="button"
-                                                aria-label="选择东部冠军为总冠军"><strong class="empty-slot">东部冠军</strong></div>
-                                        </td>
-                                        <td class="arrow-cell final-connector" id="east-final-connector" rowspan="8">
-                                        </td>
-                                        <td rowspan="4">
-                                            <div class="semi-card selectable-option is-selected" id="east-semi-s1"
-                                                data-conf="east" data-source="s1" data-target="final" tabindex="0"
-                                                role="button" aria-label="选择第二轮胜者进入东部决赛"></div>
-                                        </td>
-                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s1" rowspan="4">
-                                        </td>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option is-selected" id="east-winner-m1"
-                                                data-conf="east" data-source="m1" data-target="s1" tabindex="0"
-                                                role="button" aria-label="选择第一轮胜者进入东部第二轮"></div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="east"
-                                                data-match="m1" data-team="pistons" tabindex="0" role="button"
-                                                aria-label="选择活塞为东部首轮胜者"><strong class="team-line"><img
-                                                        class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612765/global/L/logo.svg"
-                                                        alt="活塞 logo" /><span class="team-name">活塞</span></strong><span
-                                                    class="seed">第1</span></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" data-conf="east" data-match="m1"
-                                                data-team="eastPlayin8" id="east-seed8-card" tabindex="0" role="button"
-                                                aria-label="选择第8为东部首轮胜者"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option" id="east-winner-m4" data-conf="east"
-                                                data-source="m4" data-target="s1" tabindex="0" role="button"
-                                                aria-label="选择第一轮胜者进入东部第二轮"></div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="east"
-                                                data-match="m4" data-team="cavaliers" tabindex="0" role="button"
-                                                aria-label="选择骑士为东部首轮胜者"><strong class="team-line"><img
-                                                        class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612739/global/L/logo.svg"
-                                                        alt="骑士 logo" /><span class="team-name">骑士</span></strong><span
-                                                    class="seed">第4</span></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" data-conf="east" data-match="m4"
-                                                data-team="raptors" tabindex="0" role="button" aria-label="选择猛龙为东部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612761/global/L/logo.svg"
-                                                        alt="猛龙 logo" /><span class="team-name">猛龙</span></strong><span
-                                                    class="seed">第5</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="4">
-                                            <div class="semi-card selectable-option" id="east-semi-s2" data-conf="east"
-                                                data-source="s2" data-target="final" tabindex="0" role="button"
-                                                aria-label="选择第二轮胜者进入东部决赛"></div>
-                                        </td>
-                                        <td class="arrow-cell semi-connector" id="east-semi-connector-s2" rowspan="4">
-                                        </td>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option" id="east-winner-m2" data-conf="east"
-                                                data-source="m2" data-target="s2" tabindex="0" role="button"
-                                                aria-label="选择第一轮胜者进入东部第二轮"></div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="east"
-                                                data-match="m2" data-team="celtics" tabindex="0" role="button"
-                                                aria-label="选择凯尔特人为东部首轮胜者"><strong class="team-line"><img
-                                                        class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612738/global/L/logo.svg"
-                                                        alt="凯尔特人 logo" /><span
-                                                        class="team-name">凯尔特人</span></strong><span
-                                                    class="seed">第2</span></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" data-conf="east" data-match="m2"
-                                                data-team="eastPlayin7" id="east-seed7-card" tabindex="0" role="button"
-                                                aria-label="选择第7为东部首轮胜者"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2">
-                                            <div class="win-card selectable-option" id="east-winner-m3" data-conf="east"
-                                                data-source="m3" data-target="s2" tabindex="0" role="button"
-                                                aria-label="选择第一轮胜者进入东部第二轮"></div>
-                                        </td>
-                                        <td class="arrow-cell" rowspan="2"></td>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-conf="east"
-                                                data-match="m3" data-team="knicks" tabindex="0" role="button"
-                                                aria-label="选择尼克斯为东部首轮胜者"><strong class="team-line"><img
-                                                        class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612752/global/L/logo.svg"
-                                                        alt="尼克斯 logo" /><span
-                                                        class="team-name">尼克斯</span></strong><span
-                                                    class="seed">第3</span></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" data-conf="east" data-match="m3"
-                                                data-team="hawks" tabindex="0" role="button" aria-label="选择老鹰为东部首轮胜者">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612737/global/L/logo.svg"
-                                                        alt="老鹰 logo" /><span class="team-name">老鹰</span></strong><span
-                                                    class="seed">第6</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                <!-- ═══════════════════════════════════════
+                     WEST PLAY-IN  (cols 1-3, rows 2-7)
+                     g78: rows 2-3, g910: rows 4-5, g8: rows 6-7
+                     ═══════════════════════════════════════ -->
+                <!-- g78: Suns vs Blazers -->
+                <div class="cell" style="grid-row:2; grid-column:1;">
+                    <div class="team-card selectable-option is-selected" data-playin-conf="west" data-playin-game="g78"
+                        data-team="suns" tabindex="0" role="button" aria-label="选择太阳赢下西部7/8附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612756/global/L/logo.svg"
+                                alt="太阳 logo" />
+                            <span class="team-name">太阳</span>
+                        </strong><span class="seed">7名</span>
+                    </div>
+                </div>
+                <div class="conn conn-playin" style="grid-row:2/4; grid-column:2;"><span class="arm-bottom"></span><span
+                        class="arm-mid"></span>
+                </div>
+                <div class="cell" style="grid-row:2/4; grid-column:3;">
+                    <div class="win-card" id="west-playin-seed7"></div>
+                </div>
+                <div class="cell" style="grid-row:3; grid-column:1;">
+                    <div class="team-card selectable-option" data-playin-conf="west" data-playin-game="g78"
+                        data-team="blazers" tabindex="0" role="button" aria-label="选择开拓者赢下西部7/8附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612757/global/L/logo.svg"
+                                alt="开拓者 logo" />
+                            <span class="team-name">开拓者</span>
+                        </strong><span class="seed">8名</span>
                     </div>
                 </div>
 
-                <div class="playin-panel east-playin">
-                    <p class="conference-title">东部附加赛</p>
-                    <table class="playin-table" aria-label="东部附加赛树状图">
-                        <tbody>
-                            <tr>
-                                <td rowspan="2">
-                                    <div class="win-card" id="east-playin-seed7"></div>
-                                </td>
-                                <td class="playin-arrow-cell" rowspan="2"></td>
-                                <td>
-                                    <div class="team-card selectable-option is-selected" data-playin-conf="east"
-                                        data-playin-game="g78" data-team="sixers" tabindex="0" role="button"
-                                        aria-label="选择76人赢下东部7/8附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612755/global/L/logo.svg"
-                                                alt="76人 logo" /><span class="team-name">76人</span></strong><span
-                                            class="seed">7名</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option" data-playin-conf="east"
-                                        data-playin-game="g78" data-team="magic" tabindex="0" role="button"
-                                        aria-label="选择魔术赢下东部7/8附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612753/global/L/logo.svg"
-                                                alt="魔术 logo" /><span class="team-name">魔术</span></strong><span
-                                            class="seed">8名</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td rowspan="2">
-                                    <div class="win-card" id="east-playin-g910"></div>
-                                </td>
-                                <td class="playin-arrow-cell" rowspan="2"></td>
-                                <td>
-                                    <div class="team-card selectable-option is-selected" data-playin-conf="east"
-                                        data-playin-game="g910" data-team="hornets" tabindex="0" role="button"
-                                        aria-label="选择黄蜂赢下东部9/10附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612766/global/L/logo.svg"
-                                                alt="黄蜂 logo" /><span class="team-name">黄蜂</span></strong><span
-                                            class="seed">9名</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option" data-playin-conf="east"
-                                        data-playin-game="g910" data-team="heat" tabindex="0" role="button"
-                                        aria-label="选择热火赢下东部9/10附加赛">
-                                        <strong class="team-line"><img class="team-logo"
-                                                src="https://cdn.nba.com/logos/nba/1610612748/global/L/logo.svg"
-                                                alt="热火 logo" /><span class="team-name">热火</span></strong><span
-                                            class="seed">10名</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td rowspan="2">
-                                    <div class="win-card" id="east-playin-seed8"></div>
-                                </td>
-                                <td class="playin-arrow-cell" rowspan="2"></td>
-                                <td>
-                                    <div class="team-card selectable-option" id="east-playin-g8-a"
-                                        data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
-                                        aria-label="选择7/8败者赢下东部第8争夺战"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="team-card selectable-option" id="east-playin-g8-b"
-                                        data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
-                                        aria-label="选择910胜者赢下东部第8争夺战"></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- g910: Clippers vs Warriors -->
+                <div class="cell" style="grid-row:4; grid-column:1;">
+                    <div class="team-card selectable-option is-selected" data-playin-conf="west" data-playin-game="g910"
+                        data-team="clippers" tabindex="0" role="button" aria-label="选择快船赢下西部9/10附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612746/global/L/logo.svg"
+                                alt="快船 logo" />
+                            <span class="team-name">快船</span>
+                        </strong><span class="seed">9名</span>
+                    </div>
                 </div>
+                <div class="conn conn-playin" style="grid-row:4/6; grid-column:2;"><span class="arm-bottom"></span><span
+                        class="arm-mid"></span>
+                </div>
+                <div class="cell" style="grid-row:4/6; grid-column:3;">
+                    <div class="win-card" id="west-playin-g910"></div>
+                </div>
+                <div class="cell" style="grid-row:5; grid-column:1;">
+                    <div class="team-card selectable-option" data-playin-conf="west" data-playin-game="g910"
+                        data-team="warriors" tabindex="0" role="button" aria-label="选择勇士赢下西部9/10附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612744/global/L/logo.svg"
+                                alt="勇士 logo" />
+                            <span class="team-name">勇士</span>
+                        </strong><span class="seed">10名</span>
+                    </div>
+                </div>
+
+                <!-- g8 battle: loser(7/8) vs winner(9/10) → seed 8 -->
+                <div class="cell" style="grid-row:6; grid-column:1;">
+                    <div class="team-card selectable-option" id="west-playin-g8-a" data-playin-conf="west"
+                        data-playin-game="g8" tabindex="0" role="button" aria-label="选择7/8败者赢下第8争夺战"></div>
+                </div>
+                <div class="conn conn-playin" style="grid-row:6/8; grid-column:2;"><span class="arm-bottom"></span><span
+                        class="arm-mid"></span>
+                </div>
+                <div class="cell" style="grid-row:6/8; grid-column:3;">
+                    <div class="win-card" id="west-playin-seed8"></div>
+                </div>
+                <div class="cell" style="grid-row:7; grid-column:1;">
+                    <div class="team-card selectable-option" id="west-playin-g8-b" data-playin-conf="west"
+                        data-playin-game="g8" tabindex="0" role="button" aria-label="选择910胜者赢下第8争夺战"></div>
+                </div>
+
+
+                <!-- ═══════════════════════════════════════
+                     WEST BRACKET  (cols 5-11, rows 2-9)
+                     m1: rows 2-3, m2: rows 4-5, m3: rows 6-7, m4: rows 8-9
+                     ═══════════════════════════════════════ -->
+                <!-- m1: Thunder(1) vs PlayIn8 -->
+                <div class="cell" style="grid-row:2; grid-column:5;">
+                    <div class="team-card selectable-option is-selected" data-conf="west" data-match="m1"
+                        data-team="thunder" tabindex="0" role="button" aria-label="选择雷霆为西部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612760/global/L/logo.svg"
+                                alt="雷霆 logo" />
+                            <span class="team-name">雷霆</span>
+                        </strong><span class="seed">第1</span>
+                    </div>
+                </div>
+                <div class="conn conn-r1" style="grid-row:2/4; grid-column:6;"><span class="arm-bottom"></span><span
+                        class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:2/4; grid-column:7;">
+                    <div class="win-card selectable-option is-selected" id="west-winner-m1" data-conf="west"
+                        data-source="m1" data-target="s1" tabindex="0" role="button" aria-label="选择第一轮胜者进入西部第二轮"></div>
+                </div>
+                <div class="cell" style="grid-row:3; grid-column:5;">
+                    <div class="team-card selectable-option" id="west-seed8-card" data-conf="west" data-match="m1"
+                        data-team="westPlayin8" tabindex="0" role="button" aria-label="选择第8为西部首轮胜者"></div>
+                </div>
+
+                <!-- Semi connector s1: rows 2-5 -->
+                <div class="conn conn-semi" id="west-semi-connector-s1" style="grid-row:2/6; grid-column:8;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <!-- Semi winner s1: rows 2-5 -->
+                <div class="cell" style="grid-row:2/6; grid-column:9;">
+                    <div class="semi-card selectable-option is-selected" id="west-semi-s1" data-conf="west"
+                        data-source="s1" data-target="final" tabindex="0" role="button" aria-label="选择第二轮胜者进入西部决赛">
+                    </div>
+                </div>
+
+                <!-- Final connector: rows 2-9 -->
+                <div class="conn conn-final" id="west-final-connector" style="grid-row:2/10; grid-column:10;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <!-- West Conference Champion -->
+                <div class="cell" style="grid-row:2/10; grid-column:11;">
+                    <div class="champ-card selectable-option conference-champion conference-champion--west"
+                        id="west-champion" data-league-source="west" tabindex="0" role="button" aria-label="选择西部冠军为总冠军">
+                        <strong class="empty-slot">西部冠军</strong>
+                    </div>
+                </div>
+
+                <!-- m2: Lakers(4) vs Rockets(5) -->
+                <div class="cell" style="grid-row:4; grid-column:5;">
+                    <div class="team-card selectable-option" data-conf="west" data-match="m2" data-team="lakers"
+                        tabindex="0" role="button" aria-label="选择湖人为西部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612747/global/L/logo.svg"
+                                alt="湖人 logo" />
+                            <span class="team-name">湖人</span>
+                        </strong><span class="seed">第4</span>
+                    </div>
+                </div>
+                <div class="conn conn-r1" style="grid-row:4/6; grid-column:6;"><span class="arm-bottom"></span><span
+                        class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:4/6; grid-column:7;">
+                    <div class="win-card selectable-option" id="west-winner-m2" data-conf="west" data-source="m2"
+                        data-target="s1" tabindex="0" role="button" aria-label="选择第一轮胜者进入西部第二轮"></div>
+                </div>
+                <div class="cell" style="grid-row:5; grid-column:5;">
+                    <div class="team-card selectable-option is-selected" data-conf="west" data-match="m2"
+                        data-team="rockets" tabindex="0" role="button" aria-label="选择火箭为西部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612745/global/L/logo.svg"
+                                alt="火箭 logo" />
+                            <span class="team-name">火箭</span>
+                        </strong><span class="seed">第5</span>
+                    </div>
+                </div>
+
+                <!-- m3: Spurs(2) vs PlayIn7 -->
+                <div class="cell" style="grid-row:6; grid-column:5;">
+                    <div class="team-card selectable-option is-selected" data-conf="west" data-match="m3"
+                        data-team="spurs" tabindex="0" role="button" aria-label="选择马刺为西部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612759/global/L/logo.svg"
+                                alt="马刺 logo" />
+                            <span class="team-name">马刺</span>
+                        </strong><span class="seed">第2</span>
+                    </div>
+                </div>
+                <div class="conn conn-r1" style="grid-row:6/8; grid-column:6;"><span class="arm-bottom"></span><span
+                        class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:6/8; grid-column:7;">
+                    <div class="win-card selectable-option" id="west-winner-m3" data-conf="west" data-source="m3"
+                        data-target="s2" tabindex="0" role="button" aria-label="选择第一轮胜者进入西部第二轮"></div>
+                </div>
+                <div class="cell" style="grid-row:7; grid-column:5;">
+                    <div class="team-card selectable-option" id="west-seed7-card" data-conf="west" data-match="m3"
+                        data-team="westPlayin7" tabindex="0" role="button" aria-label="选择第7为西部首轮胜者"></div>
+                </div>
+
+                <!-- Semi connector s2: rows 6-9 -->
+                <div class="conn conn-semi" id="west-semi-connector-s2" style="grid-row:6/10; grid-column:8;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <!-- Semi winner s2: rows 6-9 -->
+                <div class="cell" style="grid-row:6/10; grid-column:9;">
+                    <div class="semi-card selectable-option" id="west-semi-s2" data-conf="west" data-source="s2"
+                        data-target="final" tabindex="0" role="button" aria-label="选择第二轮胜者进入西部决赛"></div>
+                </div>
+
+                <!-- m4: Nuggets(3) vs Wolves(6) -->
+                <div class="cell" style="grid-row:8; grid-column:5;">
+                    <div class="team-card selectable-option is-selected" data-conf="west" data-match="m4"
+                        data-team="nuggets" tabindex="0" role="button" aria-label="选择掘金为西部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612743/global/L/logo.svg"
+                                alt="掘金 logo" />
+                            <span class="team-name">掘金</span>
+                        </strong><span class="seed">第3</span>
+                    </div>
+                </div>
+                <div class="conn conn-r1" style="grid-row:8/10; grid-column:6;"><span class="arm-bottom"></span><span
+                        class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:8/10; grid-column:7;">
+                    <div class="win-card selectable-option" id="west-winner-m4" data-conf="west" data-source="m4"
+                        data-target="s2" tabindex="0" role="button" aria-label="选择第一轮胜者进入西部第二轮"></div>
+                </div>
+                <div class="cell" style="grid-row:9; grid-column:5;">
+                    <div class="team-card selectable-option" data-conf="west" data-match="m4" data-team="wolves"
+                        tabindex="0" role="button" aria-label="选择森林狼为西部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612750/global/L/logo.svg"
+                                alt="森林狼 logo" />
+                            <span class="team-name">森林狼</span>
+                        </strong><span class="seed">第6</span>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════
+                     EAST BRACKET  (cols 15-21, rows 2-9)
+                     Mirror: champion on left, teams on right
+                     s1=['m1','m4'], s2=['m2','m3']
+                     m1: rows 2-3 (Pistons vs PlayIn8)
+                     m4: rows 4-5 (Cavaliers vs Raptors)
+                     m2: rows 6-7 (Celtics vs PlayIn7)
+                     m3: rows 8-9 (Knicks vs Hawks)
+                     ═══════════════════════════════════════ -->
+                <!-- East Final connector: rows 2-9 -->
+                <div class="conn conn-final conn-east" id="east-final-connector" style="grid-row:2/10; grid-column:16;">
+                    <span class="arm-bottom"></span><span class="arm-mid"></span>
+                </div>
+                <!-- East Conference Champion -->
+                <div class="cell" style="grid-row:2/10; grid-column:15;">
+                    <div class="champ-card selectable-option conference-champion conference-champion--east"
+                        id="east-champion" data-league-source="east" tabindex="0" role="button" aria-label="选择东部冠军为总冠军">
+                        <strong class="empty-slot">东部冠军</strong>
+                    </div>
+                </div>
+
+                <!-- East Semi s1: rows 2-5 -->
+                <div class="cell" style="grid-row:2/6; grid-column:17;">
+                    <div class="semi-card selectable-option is-selected" id="east-semi-s1" data-conf="east"
+                        data-source="s1" data-target="final" tabindex="0" role="button" aria-label="选择第二轮胜者进入东部决赛">
+                    </div>
+                </div>
+                <div class="conn conn-semi conn-east" id="east-semi-connector-s1" style="grid-row:2/6; grid-column:18;">
+                    <span class="arm-bottom"></span><span class="arm-mid"></span>
+                </div>
+
+                <!-- em1: Pistons(1) vs PlayIn8 -->
+                <div class="cell" style="grid-row:2/4; grid-column:19;">
+                    <div class="win-card selectable-option is-selected" id="east-winner-m1" data-conf="east"
+                        data-source="m1" data-target="s1" tabindex="0" role="button" aria-label="选择第一轮胜者进入东部第二轮"></div>
+                </div>
+                <div class="conn conn-r1 conn-east" style="grid-row:2/4; grid-column:20;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:2; grid-column:21;">
+                    <div class="team-card selectable-option is-selected" data-conf="east" data-match="m1"
+                        data-team="pistons" tabindex="0" role="button" aria-label="选择活塞为东部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612765/global/L/logo.svg"
+                                alt="活塞 logo" />
+                            <span class="team-name">活塞</span>
+                        </strong><span class="seed">第1</span>
+                    </div>
+                </div>
+                <div class="cell" style="grid-row:3; grid-column:21;">
+                    <div class="team-card selectable-option" data-conf="east" data-match="m1" data-team="eastPlayin8"
+                        id="east-seed8-card" tabindex="0" role="button" aria-label="选择第8为东部首轮胜者"></div>
+                </div>
+
+                <!-- em4: Cavaliers(4) vs Raptors(5) -->
+                <div class="cell" style="grid-row:4/6; grid-column:19;">
+                    <div class="win-card selectable-option" id="east-winner-m4" data-conf="east" data-source="m4"
+                        data-target="s1" tabindex="0" role="button" aria-label="选择第一轮胜者进入东部第二轮"></div>
+                </div>
+                <div class="conn conn-r1 conn-east" style="grid-row:4/6; grid-column:20;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:4; grid-column:21;">
+                    <div class="team-card selectable-option is-selected" data-conf="east" data-match="m4"
+                        data-team="cavaliers" tabindex="0" role="button" aria-label="选择骑士为东部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612739/global/L/logo.svg"
+                                alt="骑士 logo" />
+                            <span class="team-name">骑士</span>
+                        </strong><span class="seed">第4</span>
+                    </div>
+                </div>
+                <div class="cell" style="grid-row:5; grid-column:21;">
+                    <div class="team-card selectable-option" data-conf="east" data-match="m4" data-team="raptors"
+                        tabindex="0" role="button" aria-label="选择猛龙为东部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612761/global/L/logo.svg"
+                                alt="猛龙 logo" />
+                            <span class="team-name">猛龙</span>
+                        </strong><span class="seed">第5</span>
+                    </div>
+                </div>
+
+                <!-- East Semi s2: rows 6-9 -->
+                <div class="cell" style="grid-row:6/10; grid-column:17;">
+                    <div class="semi-card selectable-option" id="east-semi-s2" data-conf="east" data-source="s2"
+                        data-target="final" tabindex="0" role="button" aria-label="选择第二轮胜者进入东部决赛"></div>
+                </div>
+                <div class="conn conn-semi conn-east" id="east-semi-connector-s2"
+                    style="grid-row:6/10; grid-column:18;"><span class="arm-bottom"></span><span class="arm-mid"></span>
+                </div>
+
+                <!-- em2: Celtics(2) vs PlayIn7 -->
+                <div class="cell" style="grid-row:6/8; grid-column:19;">
+                    <div class="win-card selectable-option" id="east-winner-m2" data-conf="east" data-source="m2"
+                        data-target="s2" tabindex="0" role="button" aria-label="选择第一轮胜者进入东部第二轮"></div>
+                </div>
+                <div class="conn conn-r1 conn-east" style="grid-row:6/8; grid-column:20;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:6; grid-column:21;">
+                    <div class="team-card selectable-option is-selected" data-conf="east" data-match="m2"
+                        data-team="celtics" tabindex="0" role="button" aria-label="选择凯尔特人为东部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612738/global/L/logo.svg"
+                                alt="凯尔特人 logo" />
+                            <span class="team-name">凯尔特人</span>
+                        </strong><span class="seed">第2</span>
+                    </div>
+                </div>
+                <div class="cell" style="grid-row:7; grid-column:21;">
+                    <div class="team-card selectable-option" data-conf="east" data-match="m2" data-team="eastPlayin7"
+                        id="east-seed7-card" tabindex="0" role="button" aria-label="选择第7为东部首轮胜者"></div>
+                </div>
+
+                <!-- em3: Knicks(3) vs Hawks(6) -->
+                <div class="cell" style="grid-row:8/10; grid-column:19;">
+                    <div class="win-card selectable-option" id="east-winner-m3" data-conf="east" data-source="m3"
+                        data-target="s2" tabindex="0" role="button" aria-label="选择第一轮胜者进入东部第二轮"></div>
+                </div>
+                <div class="conn conn-r1 conn-east" style="grid-row:8/10; grid-column:20;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:8; grid-column:21;">
+                    <div class="team-card selectable-option is-selected" data-conf="east" data-match="m3"
+                        data-team="knicks" tabindex="0" role="button" aria-label="选择尼克斯为东部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612752/global/L/logo.svg"
+                                alt="尼克斯 logo" />
+                            <span class="team-name">尼克斯</span>
+                        </strong><span class="seed">第3</span>
+                    </div>
+                </div>
+                <div class="cell" style="grid-row:9; grid-column:21;">
+                    <div class="team-card selectable-option" data-conf="east" data-match="m3" data-team="hawks"
+                        tabindex="0" role="button" aria-label="选择老鹰为东部首轮胜者">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612737/global/L/logo.svg"
+                                alt="老鹰 logo" />
+                            <span class="team-name">老鹰</span>
+                        </strong><span class="seed">第6</span>
+                    </div>
+                </div>
+
+
+                <!-- ═══ NBA CHAMPION (top center) ═══ -->
+                <div class="cell" style="grid-row:2/4; grid-column:11/16; align-items:flex-start;">
+                    <div class="champ-card league-champion" id="league-champion">
+                        <strong class="empty-slot">总冠军</strong>
+                    </div>
+                </div>
+
+
+                <!-- ═══════════════════════════════════════
+                     EAST PLAY-IN  (cols 23-25, rows 2-7)
+                     Mirror: result on left, teams on right
+                     ═══════════════════════════════════════ -->
+                <!-- g78: 76ers vs Magic -->
+                <div class="cell" style="grid-row:2/4; grid-column:23;">
+                    <div class="win-card" id="east-playin-seed7"></div>
+                </div>
+                <div class="conn conn-playin conn-east" style="grid-row:2/4; grid-column:24;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:2; grid-column:25;">
+                    <div class="team-card selectable-option is-selected" data-playin-conf="east" data-playin-game="g78"
+                        data-team="sixers" tabindex="0" role="button" aria-label="选择76人赢下东部7/8附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612755/global/L/logo.svg"
+                                alt="76人 logo" />
+                            <span class="team-name">76人</span>
+                        </strong><span class="seed">7名</span>
+                    </div>
+                </div>
+                <div class="cell" style="grid-row:3; grid-column:25;">
+                    <div class="team-card selectable-option" data-playin-conf="east" data-playin-game="g78"
+                        data-team="magic" tabindex="0" role="button" aria-label="选择魔术赢下东部7/8附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612753/global/L/logo.svg"
+                                alt="魔术 logo" />
+                            <span class="team-name">魔术</span>
+                        </strong><span class="seed">8名</span>
+                    </div>
+                </div>
+
+                <!-- g910: Hornets vs Heat -->
+                <div class="cell" style="grid-row:4/6; grid-column:23;">
+                    <div class="win-card" id="east-playin-g910"></div>
+                </div>
+                <div class="conn conn-playin conn-east" style="grid-row:4/6; grid-column:24;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:4; grid-column:25;">
+                    <div class="team-card selectable-option is-selected" data-playin-conf="east" data-playin-game="g910"
+                        data-team="hornets" tabindex="0" role="button" aria-label="选择黄蜂赢下东部9/10附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612766/global/L/logo.svg"
+                                alt="黄蜂 logo" />
+                            <span class="team-name">黄蜂</span>
+                        </strong><span class="seed">9名</span>
+                    </div>
+                </div>
+                <div class="cell" style="grid-row:5; grid-column:25;">
+                    <div class="team-card selectable-option" data-playin-conf="east" data-playin-game="g910"
+                        data-team="heat" tabindex="0" role="button" aria-label="选择热火赢下东部9/10附加赛">
+                        <strong class="team-line">
+                            <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612748/global/L/logo.svg"
+                                alt="热火 logo" />
+                            <span class="team-name">热火</span>
+                        </strong><span class="seed">10名</span>
+                    </div>
+                </div>
+
+                <!-- g8 battle for East -->
+                <div class="cell" style="grid-row:6/8; grid-column:23;">
+                    <div class="win-card" id="east-playin-seed8"></div>
+                </div>
+                <div class="conn conn-playin conn-east" style="grid-row:6/8; grid-column:24;"><span
+                        class="arm-bottom"></span><span class="arm-mid"></span></div>
+                <div class="cell" style="grid-row:6; grid-column:25;">
+                    <div class="team-card selectable-option" id="east-playin-g8-a" data-playin-conf="east"
+                        data-playin-game="g8" tabindex="0" role="button" aria-label="选择7/8败者赢下东部第8争夺战"></div>
+                </div>
+                <div class="cell" style="grid-row:7; grid-column:25;">
+                    <div class="team-card selectable-option" id="east-playin-g8-b" data-playin-conf="east"
+                        data-playin-game="g8" tabindex="0" role="button" aria-label="选择910胜者赢下东部第8争夺战"></div>
+                </div>
+
             </div>
         </section>
     </main>
@@ -1046,26 +875,13 @@
             }
         };
 
-        const westPlayIn = {
-            g78Winner: 'suns',
-            g910Winner: 'clippers',
-            g8Winner: 'blazers'
-        };
-
-        const eastPlayIn = {
-            g78Winner: 'sixers',
-            g910Winner: 'hornets',
-            g8Winner: 'magic'
-        };
-
-        const leagueState = {
-            champion: null
-        };
+        const westPlayIn = { g78Winner: 'suns', g910Winner: 'clippers', g8Winner: 'blazers' };
+        const eastPlayIn = { g78Winner: 'sixers', g910Winner: 'hornets', g8Winner: 'magic' };
+        const leagueState = { champion: null };
 
         function getWestPlayInLoser() {
             return westPlayIn.g78Winner === 'suns' ? 'blazers' : 'suns';
         }
-
         function getWestPlayInSeed8Candidates() {
             return [getWestPlayInLoser(), westPlayIn.g910Winner];
         }
@@ -1116,13 +932,13 @@
             document.getElementById('west-seed7-card').innerHTML = teamCardMarkup('westPlayin7', '第7', '第7');
             document.getElementById('west-seed8-card').innerHTML = teamCardMarkup('westPlayin8', '第8', '第8');
 
-            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g78"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g78"]').forEach(el => {
                 el.classList.toggle('is-selected', westPlayIn.g78Winner === el.dataset.team);
             });
-            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g910"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g910"]').forEach(el => {
                 el.classList.toggle('is-selected', westPlayIn.g910Winner === el.dataset.team);
             });
-            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g8"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g8"]').forEach(el => {
                 el.classList.toggle('is-selected', westPlayIn.g8Winner === el.dataset.team);
             });
         }
@@ -1130,7 +946,6 @@
         function getEastPlayInLoser() {
             return eastPlayIn.g78Winner === 'sixers' ? 'magic' : 'sixers';
         }
-
         function getEastPlayInSeed8Candidates() {
             return [getEastPlayInLoser(), eastPlayIn.g910Winner];
         }
@@ -1160,13 +975,13 @@
             document.getElementById('east-seed7-card').innerHTML = teamCardMarkup('eastPlayin7', '第7', '第7');
             document.getElementById('east-seed8-card').innerHTML = teamCardMarkup('eastPlayin8', '第8', '第8');
 
-            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g78"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g78"]').forEach(el => {
                 el.classList.toggle('is-selected', eastPlayIn.g78Winner === el.dataset.team);
             });
-            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g910"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g910"]').forEach(el => {
                 el.classList.toggle('is-selected', eastPlayIn.g910Winner === el.dataset.team);
             });
-            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g8"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g8"]').forEach(el => {
                 el.classList.toggle('is-selected', eastPlayIn.g8Winner === el.dataset.team);
             });
         }
@@ -1183,7 +998,7 @@
             document.getElementById(ids.semis.s2).innerHTML = teamMarkup(state.s2, '次轮胜者待定');
             document.getElementById(ids.champion).innerHTML = teamMarkup(state.final, ids.championFallback);
 
-            document.querySelectorAll('[data-conf="' + conf + '"][data-match]').forEach((el) => {
+            document.querySelectorAll('[data-conf="' + conf + '"][data-match]').forEach(el => {
                 el.classList.toggle('is-selected', state[el.dataset.match] === el.dataset.team);
             });
 
@@ -1200,34 +1015,11 @@
         }
 
         function updateSemiConnectors(conf) {
-            const { state, ids, groups } = brackets[conf];
-            const s1Connector = document.getElementById(ids.semiConnectors.s1);
-            const s2Connector = document.getElementById(ids.semiConnectors.s2);
-            if (!s1Connector || !s2Connector) return;
-
-            s1Connector.classList.remove('is-top-only', 'is-bottom-only');
-            s2Connector.classList.remove('is-top-only', 'is-bottom-only');
-
-            const [s1Top, s1Bottom] = groups.s1;
-            const [s2Top, s2Bottom] = groups.s2;
-
-            if (state.s1 === state[s1Top]) s1Connector.classList.add('is-top-only');
-            if (state.s1 === state[s1Bottom]) s1Connector.classList.add('is-bottom-only');
-            if (state.s2 === state[s2Top]) s2Connector.classList.add('is-top-only');
-            if (state.s2 === state[s2Bottom]) s2Connector.classList.add('is-bottom-only');
+            // Connectors always show both arms — no directional dimming
         }
 
         function updateFinalConnector(conf) {
-            const { state, ids } = brackets[conf];
-            const connector = document.getElementById(ids.finalConnector);
-            if (!connector) return;
-
-            connector.classList.remove('is-top-only', 'is-bottom-only');
-            const chosenFinal = state.final || (conf === 'west' ? (state.s1 || state.s2) : null);
-            if (!chosenFinal) return;
-
-            if (chosenFinal === state.s1) connector.classList.add('is-top-only');
-            if (chosenFinal === state.s2) connector.classList.add('is-bottom-only');
+            // Connectors always show both arms — no directional dimming
         }
 
         function normalizeLeagueChampion() {
@@ -1246,8 +1038,8 @@
             if (conf === 'west') normalizeWestPlayIn();
             if (conf === 'east') normalizeEastPlayIn();
 
-            const semiOneCandidates = groups.s1.map((k) => state[k]);
-            const semiTwoCandidates = groups.s2.map((k) => state[k]);
+            const semiOneCandidates = groups.s1.map(k => state[k]);
+            const semiTwoCandidates = groups.s2.map(k => state[k]);
 
             if (state.s1 && !semiOneCandidates.includes(state.s1)) state.s1 = semiOneCandidates[0] || null;
             if (state.s2 && !semiTwoCandidates.includes(state.s2)) state.s2 = null;
@@ -1257,38 +1049,31 @@
 
         function fitBracketToViewport() {
             const section = document.querySelector('section');
-            const layout = document.querySelector('.main-layout');
-            if (!section || !layout) return;
+            const grid = document.getElementById('bracket-grid');
+            if (!section || !grid) return;
 
             if (window.matchMedia('(max-width: 640px)').matches) {
-                layout.style.transform = '';
-                layout.style.transformOrigin = '';
+                grid.style.transform = '';
                 section.style.minHeight = '';
                 return;
             }
 
-            layout.style.transform = 'none';
-            layout.style.transformOrigin = 'top left';
+            grid.style.transform = 'none';
+            const naturalWidth = grid.scrollWidth;
 
-            // Temporarily shrink to max-content to measure the true content width
-            // (layout is normally width:100%, so scrollWidth would equal clientWidth)
-            const prevWidth = layout.style.width;
-            layout.style.width = 'max-content';
-            const naturalWidth = layout.scrollWidth;
-            layout.style.width = prevWidth;
-
-            const sectionStyle = window.getComputedStyle(section);
-            const paddingLeft = parseFloat(sectionStyle.paddingLeft) || 0;
-            const paddingRight = parseFloat(sectionStyle.paddingRight) || 0;
-            const contentWidth = section.clientWidth - paddingLeft - paddingRight;
+            const cs = window.getComputedStyle(section);
+            const padL = parseFloat(cs.paddingLeft) || 0;
+            const padR = parseFloat(cs.paddingRight) || 0;
+            const contentWidth = section.clientWidth - padL - padR;
             const safeWidth = Math.max(0, contentWidth - 8);
             const scale = naturalWidth > 0 ? Math.min(1, safeWidth / naturalWidth) : 1;
 
-            layout.style.transform = 'scale(' + scale + ')';
-            section.style.minHeight = Math.ceil(layout.scrollHeight * scale + 8) + 'px';
+            grid.style.transform = 'scale(' + scale + ')';
+            section.style.minHeight = Math.ceil(grid.scrollHeight * scale + 8) + 'px';
         }
 
-        document.querySelectorAll('[data-playin-conf][data-playin-game]').forEach((el) => {
+        /* ── Play-in selections ── */
+        document.querySelectorAll('[data-playin-conf][data-playin-game]').forEach(el => {
             const choose = () => {
                 const conf = el.dataset.playinConf;
                 const game = el.dataset.playinGame;
@@ -1303,7 +1088,6 @@
                     renderWestPlayIn();
                     renderConference('west');
                 }
-
                 if (conf === 'east') {
                     if (game === 'g78') eastPlayIn.g78Winner = team;
                     if (game === 'g910') eastPlayIn.g910Winner = team;
@@ -1312,21 +1096,15 @@
                     renderEastPlayIn();
                     renderConference('east');
                 }
-
                 renderLeagueChampion();
                 fitBracketToViewport();
             };
-
             el.addEventListener('click', choose);
-            el.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    choose();
-                }
-            });
+            el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
         });
 
-        document.querySelectorAll('[data-conf][data-match]').forEach((el) => {
+        /* ── Bracket match selections ── */
+        document.querySelectorAll('[data-conf][data-match]').forEach(el => {
             const choose = () => {
                 const conf = el.dataset.conf;
                 brackets[conf].state[el.dataset.match] = el.dataset.team;
@@ -1335,41 +1113,29 @@
                 renderLeagueChampion();
                 fitBracketToViewport();
             };
-
             el.addEventListener('click', choose);
-            el.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    choose();
-                }
-            });
+            el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
         });
 
-        document.querySelectorAll('[data-conf][data-source][data-target]').forEach((el) => {
+        /* ── Semi/final promotions ── */
+        document.querySelectorAll('[data-conf][data-source][data-target]').forEach(el => {
             const choose = () => {
                 const conf = el.dataset.conf;
                 const state = brackets[conf].state;
                 const source = el.dataset.source;
                 const target = el.dataset.target;
-
                 if (state[source]) state[target] = state[source];
-
                 normalizeConference(conf);
                 renderConference(conf);
                 renderLeagueChampion();
                 fitBracketToViewport();
             };
-
             el.addEventListener('click', choose);
-            el.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    choose();
-                }
-            });
+            el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
         });
 
-        document.querySelectorAll('[data-league-source]').forEach((el) => {
+        /* ── League champion selection ── */
+        document.querySelectorAll('[data-league-source]').forEach(el => {
             const choose = () => {
                 const champion = brackets[el.dataset.leagueSource].state.final;
                 if (champion) leagueState.champion = champion;
@@ -1379,16 +1145,11 @@
                 renderConference('east');
                 fitBracketToViewport();
             };
-
             el.addEventListener('click', choose);
-            el.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    choose();
-                }
-            });
+            el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
         });
 
+        /* ── Initial render ── */
         renderWestPlayIn();
         renderEastPlayIn();
         renderConference('west');
