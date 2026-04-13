@@ -40,7 +40,7 @@
             border-radius: 0;
             box-shadow: none;
             padding: 16px;
-            overflow-x: auto;
+            overflow-x: hidden;
         }
 
         .hint {
@@ -1079,7 +1079,26 @@
         }
 
         function fitBracketToViewport() {
-            return;
+            const section = document.querySelector('section');
+            const layout = document.querySelector('.main-layout');
+            if (!section || !layout) return;
+
+            if (window.matchMedia('(max-width: 640px)').matches) {
+                layout.style.transform = '';
+                layout.style.transformOrigin = '';
+                section.style.minHeight = '';
+                return;
+            }
+
+            layout.style.transform = 'none';
+            layout.style.transformOrigin = 'top left';
+
+            const naturalWidth = layout.scrollWidth;
+            const availableWidth = section.clientWidth;
+            const scale = naturalWidth > 0 ? Math.min(1, availableWidth / naturalWidth) : 1;
+
+            layout.style.transform = 'scale(' + scale + ')';
+            section.style.minHeight = Math.ceil(layout.scrollHeight * scale + 8) + 'px';
         }
 
         document.querySelectorAll('[data-playin-conf][data-playin-game]').forEach((el) => {
