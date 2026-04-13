@@ -208,12 +208,24 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 152px;
+            min-width: 180px;
         }
 
         .league-champion {
             align-items: center;
             text-align: center;
+            padding: var(--space-lg) var(--space-2xl);
+            border-radius: 14px;
+            min-width: 180px;
+        }
+
+        .league-champion .team-logo {
+            width: 120px;
+            height: 120px;
+        }
+
+        .league-champion .team-name {
+            font-size: 1.5rem;
         }
 
         .bracket-table {
@@ -371,8 +383,8 @@
         }
 
         .team-logo {
-            width: 58px;
-            height: 58px;
+            width: 76px;
+            height: 76px;
             object-fit: contain;
             flex-shrink: 0;
         }
@@ -747,7 +759,7 @@
                         </div>
 
                         <div class="finals-panel">
-                            <p class="conference-title">总冠军</p>
+                            <p class="conference-title" style="text-align:center">总冠军</p>
                             <div class="champ-card league-champion" id="league-champion"><strong
                                     class="empty-slot">总冠军</strong></div>
                         </div>
