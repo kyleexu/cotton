@@ -103,6 +103,28 @@
             padding-bottom: 0;
             min-width: 0;
             --bracket-scale: 1;
+            position: relative;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .bracket-wrap::before,
+        .bracket-wrap::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #d6dde7;
+            pointer-events: none;
+        }
+
+        .bracket-wrap::before {
+            left: 0;
+        }
+
+        .bracket-wrap::after {
+            right: 0;
         }
 
         .conference-grid {
@@ -315,7 +337,6 @@
 <body>
     <main class="container">
         <section>
-            <p class="hint">点击附加赛球队、季后赛球队或上一轮胜者，可更新下一轮结果。</p>
             <div class="main-layout">
                 <div class="playin-panel">
                     <p class="conference-title">西部附加赛</p>
