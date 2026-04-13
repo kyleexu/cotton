@@ -248,11 +248,26 @@
         .league-champion {
             padding: 6px 10px;
             border-radius: 10px;
+            width: 100%;
+            min-height: 112px;
         }
 
         .league-champion .team-logo {
             width: 48px;
             height: 48px;
+
+            .conference-champion {
+                width: calc(100% + 48px);
+                max-width: 158px;
+            }
+
+            .conference-champion--west {
+                --shift-x: 24px;
+            }
+
+            .conference-champion--east {
+                --shift-x: -24px;
+            }
         }
 
         .league-champion .team-name {
@@ -262,7 +277,7 @@
         /* ═══════════════════════════════════
            CONNECTOR LINES  (CSS borders)
            ═══════════════════════════════════
-           .conn        — base positioning
+            transform: translate(var(--shift-x, 0), -1px);
            .conn-r1     — spans 2 rows (first round pair)
            .conn-semi   — spans 4 rows
            .conn-final  — spans 8 rows
@@ -363,7 +378,8 @@
                 <div class="grid-header" style="grid-row:1; grid-column:1/4;">西部附加赛</div>
                 <div class="grid-header" style="grid-row:1; grid-column:5;">西部</div>
                 <div class="grid-header"
-                    style="grid-row:1; grid-column:13; text-align:center; line-height:1; padding-bottom:2px;">总冠军</div>
+                    style="grid-row:1; grid-column:11/16; text-align:center; line-height:1; padding-bottom:2px;">总冠军
+                </div>
                 <div class="grid-header" style="grid-row:1; grid-column:21; text-align:right;">东部</div>
                 <div class="grid-header" style="grid-row:1; grid-column:23/26; text-align:right;">东部附加赛</div>
 
@@ -489,10 +505,10 @@
                 <!-- Final connector: rows 2-9 -->
                 <div class="conn conn-final" id="west-final-connector" style="grid-row:2/10; grid-column:10;"><span
                         class="arm-bottom"></span><span class="arm-mid"></span></div>
-                <!-- West Conference Champion: rows 2-9 -->
+                <!-- West Conference Champion -->
                 <div class="cell" style="grid-row:2/10; grid-column:11;">
-                    <div class="champ-card selectable-option" id="west-champion" data-league-source="west" tabindex="0"
-                        role="button" aria-label="选择西部冠军为总冠军">
+                    <div class="champ-card selectable-option conference-champion conference-champion--west"
+                        id="west-champion" data-league-source="west" tabindex="0" role="button" aria-label="选择西部冠军为总冠军">
                         <strong class="empty-slot">西部冠军</strong>
                     </div>
                 </div>
@@ -584,15 +600,6 @@
                     </div>
                 </div>
 
-
-                <!-- ═══ NBA CHAMPION (col 13, row 2) ═══ -->
-                <div class="cell" style="grid-row:2; grid-column:13;">
-                    <div class="champ-card league-champion" id="league-champion">
-                        <strong class="empty-slot">总冠军</strong>
-                    </div>
-                </div>
-
-
                 <!-- ═══════════════════════════════════════
                      EAST BRACKET  (cols 15-21, rows 2-9)
                      Mirror: champion on left, teams on right
@@ -602,16 +609,16 @@
                      m2: rows 6-7 (Celtics vs PlayIn7)
                      m3: rows 8-9 (Knicks vs Hawks)
                      ═══════════════════════════════════════ -->
-                <!-- East Conference Champion: rows 2-9 -->
-                <div class="cell" style="grid-row:2/10; grid-column:15;">
-                    <div class="champ-card selectable-option" id="east-champion" data-league-source="east" tabindex="0"
-                        role="button" aria-label="选择东部冠军为总冠军">
-                        <strong class="empty-slot">东部冠军</strong>
-                    </div>
-                </div>
                 <!-- East Final connector: rows 2-9 -->
                 <div class="conn conn-final conn-east" id="east-final-connector" style="grid-row:2/10; grid-column:16;">
                     <span class="arm-bottom"></span><span class="arm-mid"></span>
+                </div>
+                <!-- East Conference Champion -->
+                <div class="cell" style="grid-row:2/10; grid-column:15;">
+                    <div class="champ-card selectable-option conference-champion conference-champion--east"
+                        id="east-champion" data-league-source="east" tabindex="0" role="button" aria-label="选择东部冠军为总冠军">
+                        <strong class="empty-slot">东部冠军</strong>
+                    </div>
                 </div>
 
                 <!-- East Semi s1: rows 2-5 -->
@@ -730,6 +737,14 @@
                                 alt="老鹰 logo" />
                             <span class="team-name">老鹰</span>
                         </strong><span class="seed">第6</span>
+                    </div>
+                </div>
+
+
+                <!-- ═══ NBA CHAMPION (top center) ═══ -->
+                <div class="cell" style="grid-row:2/4; grid-column:11/16; align-items:flex-start;">
+                    <div class="champ-card league-champion" id="league-champion">
+                        <strong class="empty-slot">总冠军</strong>
                     </div>
                 </div>
 
