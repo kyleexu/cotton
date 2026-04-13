@@ -13,6 +13,7 @@
             --muted: #5c6b7a;
             --accent: #1f7a8c;
             --accent-2: #ff7f11;
+            --line: #d6dde7;
             --slot-height: 102px;
         }
 
@@ -62,6 +63,11 @@
             min-width: 228px;
         }
 
+        .playin-panel.east-playin {
+            min-width: 260px;
+            padding-left: 6px;
+        }
+
         .conference-title {
             margin: 0 0 8px;
             font-size: 1.14rem;
@@ -91,11 +97,48 @@
         }
 
         .playin-arrow-cell {
-            width: 18px;
+            width: 22px;
             text-align: center;
-            color: var(--accent);
-            font-weight: 700;
-            opacity: 0.8;
+            color: transparent;
+            font-size: 0;
+            position: relative;
+            opacity: 1;
+        }
+
+        .playin-arrow-cell::before,
+        .arrow-cell::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            transform: translateX(-0.5px);
+            background: rgba(31, 122, 140, 0.22);
+        }
+
+        .playin-arrow-cell::after,
+        .arrow-cell::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 1px;
+            transform: translateY(-0.5px);
+            background: rgba(31, 122, 140, 0.3);
+        }
+
+        .arrow-cell[rowspan],
+        .playin-arrow-cell[rowspan] {
+            background-image:
+                linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3)),
+                linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-repeat: no-repeat;
+            background-size: 12px 1px, 12px 1px;
+            background-position:
+                calc(50% - 12px) 25%,
+                calc(50% - 12px) 75%;
         }
 
         .bracket-wrap {
@@ -104,8 +147,8 @@
             min-width: 0;
             padding-left: 8px;
             padding-right: 8px;
-            border-left: 1px solid #d6dde7;
-            border-right: 1px solid #d6dde7;
+            border-left: 1px solid var(--line);
+            border-right: 1px solid var(--line);
         }
 
         .conference-grid {
@@ -140,7 +183,7 @@
         }
 
         .col-arrow {
-            width: 18px;
+            width: 22px;
         }
 
         .col-round {
@@ -194,6 +237,44 @@
             text-align: center;
         }
 
+        .conference-panel.east .arrow-cell::after,
+        .playin-panel.east-playin .playin-arrow-cell::after {
+            left: auto;
+            right: 50%;
+        }
+
+        .conference-panel.east .arrow-cell[rowspan],
+        .playin-panel.east-playin .playin-arrow-cell[rowspan] {
+            background-image:
+                linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3)),
+                linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-position:
+                calc(50% + 6px) 25%,
+                calc(50% + 6px) 75%;
+        }
+
+        .arrow-cell.final-connector.is-top-only[rowspan] {
+            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-size: 12px 1px;
+            background-position: calc(50% - 12px) 25%;
+        }
+
+        .arrow-cell.final-connector.is-bottom-only[rowspan] {
+            background-image: linear-gradient(to right, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-size: 12px 1px;
+            background-position: calc(50% - 12px) 75%;
+        }
+
+        .conference-panel.east .arrow-cell.final-connector.is-top-only[rowspan] {
+            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-position: calc(50% + 6px) 25%;
+        }
+
+        .conference-panel.east .arrow-cell.final-connector.is-bottom-only[rowspan] {
+            background-image: linear-gradient(to left, rgba(31, 122, 140, 0.3), rgba(31, 122, 140, 0.3));
+            background-position: calc(50% + 6px) 75%;
+        }
+
         .playin-panel.east-playin .conference-title {
             text-align: right;
         }
@@ -215,6 +296,8 @@
             width: fit-content;
             min-width: 0;
             text-align: center;
+            border-radius: 8px;
+            transition: opacity 120ms ease, background-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
         }
 
         .team-card {
@@ -259,6 +342,22 @@
 
         .selectable-option.is-selected {
             color: var(--accent-2);
+            opacity: 1;
+            filter: saturate(1);
+            background: rgba(255, 127, 17, 0.1);
+            box-shadow: inset 0 0 0 1px rgba(255, 127, 17, 0.28);
+        }
+
+        .empty-slot {
+            opacity: 0.8;
+        }
+
+        .team-card:has(.empty-slot),
+        .win-card:has(.empty-slot),
+        .semi-card:has(.empty-slot),
+        .champ-card:has(.empty-slot) {
+            opacity: 0.6;
+            filter: none;
         }
 
         .empty-slot {
@@ -268,12 +367,12 @@
         }
 
         .arrow-cell {
-            width: 18px;
+            width: 22px;
             text-align: center;
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 0.9rem;
-            opacity: 0.8;
+            color: transparent;
+            font-size: 0;
+            position: relative;
+            opacity: 1;
         }
 
         .seed {
@@ -312,6 +411,11 @@
 
             .playin-panel {
                 min-width: 0;
+            }
+
+            .playin-panel.east-playin {
+                min-width: 0;
+                padding-left: 0;
             }
 
             .finals-panel {
@@ -485,7 +589,7 @@
                                                 data-conf="west" data-source="s1" data-target="final" tabindex="0"
                                                 role="button" aria-label="选择第二轮胜者进入西部决赛"></div>
                                         </td>
-                                        <td class="arrow-cell" rowspan="8">→</td>
+                                        <td class="arrow-cell final-connector" id="west-final-connector" rowspan="8">→</td>
                                         <td rowspan="8">
                                             <div class="champ-card selectable-option" id="west-champion"
                                                 data-league-source="west" tabindex="0" role="button"
@@ -629,7 +733,7 @@
                                                 data-league-source="east" tabindex="0" role="button"
                                                 aria-label="选择东部冠军为总冠军"><strong class="empty-slot">东部冠军</strong></div>
                                         </td>
-                                        <td class="arrow-cell" rowspan="8">←</td>
+                                        <td class="arrow-cell final-connector" id="east-final-connector" rowspan="8">←</td>
                                         <td rowspan="4">
                                             <div class="semi-card selectable-option is-selected" id="east-semi-s1"
                                                 data-conf="east" data-source="s1" data-target="final" tabindex="0"
@@ -887,6 +991,7 @@
                     winners: { m1: 'west-winner-m1', m2: 'west-winner-m2', m3: 'west-winner-m3', m4: 'west-winner-m4' },
                     semis: { s1: 'west-semi-s1', s2: 'west-semi-s2' },
                     champion: 'west-champion',
+                    finalConnector: 'west-final-connector',
                     championFallback: '西部冠军'
                 }
             },
@@ -897,6 +1002,7 @@
                     winners: { m1: 'east-winner-m1', m2: 'east-winner-m2', m3: 'east-winner-m3', m4: 'east-winner-m4' },
                     semis: { s1: 'east-semi-s1', s2: 'east-semi-s2' },
                     champion: 'east-champion',
+                    finalConnector: 'east-final-connector',
                     championFallback: '东部冠军'
                 }
             }
@@ -1051,6 +1157,20 @@
             document.getElementById(ids.semis.s1).classList.toggle('is-selected', state.final === state.s1 && !!state.s1);
             document.getElementById(ids.semis.s2).classList.toggle('is-selected', state.final === state.s2 && !!state.s2);
             document.getElementById(ids.champion).classList.toggle('is-selected', leagueState.champion === state.final && !!state.final);
+            updateFinalConnector(conf);
+        }
+
+        function updateFinalConnector(conf) {
+            const { state, ids } = brackets[conf];
+            const connector = document.getElementById(ids.finalConnector);
+            if (!connector) return;
+
+            connector.classList.remove('is-top-only', 'is-bottom-only');
+            const chosenFinal = state.final || (conf === 'west' ? (state.s1 || state.s2) : null);
+            if (!chosenFinal) return;
+
+            if (chosenFinal === state.s1) connector.classList.add('is-top-only');
+            if (chosenFinal === state.s2) connector.classList.add('is-bottom-only');
         }
 
         function normalizeLeagueChampion() {
@@ -1094,8 +1214,12 @@
             layout.style.transformOrigin = 'top left';
 
             const naturalWidth = layout.scrollWidth;
-            const availableWidth = section.clientWidth;
-            const scale = naturalWidth > 0 ? Math.min(1, availableWidth / naturalWidth) : 1;
+            const sectionStyle = window.getComputedStyle(section);
+            const paddingLeft = parseFloat(sectionStyle.paddingLeft) || 0;
+            const paddingRight = parseFloat(sectionStyle.paddingRight) || 0;
+            const contentWidth = section.clientWidth - paddingLeft - paddingRight;
+            const safeWidth = Math.max(0, contentWidth - 8);
+            const scale = naturalWidth > 0 ? Math.min(1, safeWidth / naturalWidth) : 1;
 
             layout.style.transform = 'scale(' + scale + ')';
             section.style.minHeight = Math.ceil(layout.scrollHeight * scale + 8) + 'px';
