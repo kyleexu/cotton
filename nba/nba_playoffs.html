@@ -53,7 +53,7 @@
 
         .main-layout {
             display: grid;
-            grid-template-columns: max-content 1fr;
+            grid-template-columns: max-content 1fr max-content;
             gap: 16px;
             align-items: start;
         }
@@ -101,11 +101,12 @@
         .bracket-wrap {
             overflow-x: auto;
             padding-bottom: 6px;
+            min-width: 0;
         }
 
         .conference-grid {
             display: grid;
-            grid-template-columns: max-content max-content max-content max-content;
+            grid-template-columns: max-content max-content max-content;
             gap: 20px;
             align-items: start;
             width: max-content;
@@ -720,108 +721,108 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="playin-panel">
-                            <p class="conference-title">东部附加赛</p>
-                            <table class="playin-table" aria-label="东部附加赛树状图">
-                                <thead>
-                                    <tr>
-                                        <th>晋级结果</th>
-                                        <th></th>
-                                        <th>比赛结果</th>
-                                        <th></th>
-                                        <th>附加赛对阵</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td class="playin-arrow-cell"></td>
-                                        <td rowspan="2">
-                                            <div class="win-card" id="east-playin-seed7"></div>
-                                        </td>
-                                        <td class="playin-arrow-cell" rowspan="2">←</td>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-playin-conf="east"
-                                                data-playin-game="g78" data-team="sixers" tabindex="0" role="button"
-                                                aria-label="选择76人赢下东部7/8附加赛">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612755/global/L/logo.svg"
-                                                        alt="76人 logo" /><span
-                                                        class="team-name">76人</span></strong><span
-                                                    class="seed">7名</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td class="playin-arrow-cell"></td>
-                                        <td>
-                                            <div class="team-card selectable-option" data-playin-conf="east"
-                                                data-playin-game="g78" data-team="magic" tabindex="0" role="button"
-                                                aria-label="选择魔术赢下东部7/8附加赛">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612753/global/L/logo.svg"
-                                                        alt="魔术 logo" /><span class="team-name">魔术</span></strong><span
-                                                    class="seed">8名</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td class="playin-arrow-cell"></td>
-                                        <td rowspan="2">
-                                            <div class="win-card" id="east-playin-g910"></div>
-                                        </td>
-                                        <td class="playin-arrow-cell" rowspan="2">←</td>
-                                        <td>
-                                            <div class="team-card selectable-option is-selected" data-playin-conf="east"
-                                                data-playin-game="g910" data-team="hornets" tabindex="0" role="button"
-                                                aria-label="选择黄蜂赢下东部9/10附加赛">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612766/global/L/logo.svg"
-                                                        alt="黄蜂 logo" /><span class="team-name">黄蜂</span></strong><span
-                                                    class="seed">9名</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td class="playin-arrow-cell"></td>
-                                        <td>
-                                            <div class="team-card selectable-option" data-playin-conf="east"
-                                                data-playin-game="g910" data-team="heat" tabindex="0" role="button"
-                                                aria-label="选择热火赢下东部9/10附加赛">
-                                                <strong class="team-line"><img class="team-logo"
-                                                        src="https://cdn.nba.com/logos/nba/1610612748/global/L/logo.svg"
-                                                        alt="热火 logo" /><span class="team-name">热火</span></strong><span
-                                                    class="seed">10名</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2"><span class="seed">8号种子进入首轮</span></td>
-                                        <td class="playin-arrow-cell" rowspan="2">←</td>
-                                        <td rowspan="2">
-                                            <div class="win-card" id="east-playin-seed8"></div>
-                                        </td>
-                                        <td class="playin-arrow-cell" rowspan="2">←</td>
-                                        <td>
-                                            <div class="team-card selectable-option" id="east-playin-g8-a"
-                                                data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
-                                                aria-label="选择78败者赢下东部8号种子争夺战"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="team-card selectable-option" id="east-playin-g8-b"
-                                                data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
-                                                aria-label="选择910胜者赢下东部8号种子争夺战"></div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
+                </div>
+
+                <div class="playin-panel">
+                    <p class="conference-title">东部附加赛</p>
+                    <table class="playin-table" aria-label="东部附加赛树状图">
+                        <thead>
+                            <tr>
+                                <th>晋级结果</th>
+                                <th></th>
+                                <th>比赛结果</th>
+                                <th></th>
+                                <th>附加赛对阵</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td class="playin-arrow-cell"></td>
+                                <td rowspan="2">
+                                    <div class="win-card" id="east-playin-seed7"></div>
+                                </td>
+                                <td class="playin-arrow-cell" rowspan="2">←</td>
+                                <td>
+                                    <div class="team-card selectable-option is-selected" data-playin-conf="east"
+                                        data-playin-game="g78" data-team="sixers" tabindex="0" role="button"
+                                        aria-label="选择76人赢下东部7/8附加赛">
+                                        <strong class="team-line"><img class="team-logo"
+                                                src="https://cdn.nba.com/logos/nba/1610612755/global/L/logo.svg"
+                                                alt="76人 logo" /><span class="team-name">76人</span></strong><span
+                                            class="seed">7名</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="playin-arrow-cell"></td>
+                                <td>
+                                    <div class="team-card selectable-option" data-playin-conf="east"
+                                        data-playin-game="g78" data-team="magic" tabindex="0" role="button"
+                                        aria-label="选择魔术赢下东部7/8附加赛">
+                                        <strong class="team-line"><img class="team-logo"
+                                                src="https://cdn.nba.com/logos/nba/1610612753/global/L/logo.svg"
+                                                alt="魔术 logo" /><span class="team-name">魔术</span></strong><span
+                                            class="seed">8名</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="playin-arrow-cell"></td>
+                                <td rowspan="2">
+                                    <div class="win-card" id="east-playin-g910"></div>
+                                </td>
+                                <td class="playin-arrow-cell" rowspan="2">←</td>
+                                <td>
+                                    <div class="team-card selectable-option is-selected" data-playin-conf="east"
+                                        data-playin-game="g910" data-team="hornets" tabindex="0" role="button"
+                                        aria-label="选择黄蜂赢下东部9/10附加赛">
+                                        <strong class="team-line"><img class="team-logo"
+                                                src="https://cdn.nba.com/logos/nba/1610612766/global/L/logo.svg"
+                                                alt="黄蜂 logo" /><span class="team-name">黄蜂</span></strong><span
+                                            class="seed">9名</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="playin-arrow-cell"></td>
+                                <td>
+                                    <div class="team-card selectable-option" data-playin-conf="east"
+                                        data-playin-game="g910" data-team="heat" tabindex="0" role="button"
+                                        aria-label="选择热火赢下东部9/10附加赛">
+                                        <strong class="team-line"><img class="team-logo"
+                                                src="https://cdn.nba.com/logos/nba/1610612748/global/L/logo.svg"
+                                                alt="热火 logo" /><span class="team-name">热火</span></strong><span
+                                            class="seed">10名</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2"><span class="seed">8号种子进入首轮</span></td>
+                                <td class="playin-arrow-cell" rowspan="2">←</td>
+                                <td rowspan="2">
+                                    <div class="win-card" id="east-playin-seed8"></div>
+                                </td>
+                                <td class="playin-arrow-cell" rowspan="2">←</td>
+                                <td>
+                                    <div class="team-card selectable-option" id="east-playin-g8-a"
+                                        data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
+                                        aria-label="选择78败者赢下东部8号种子争夺战"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="team-card selectable-option" id="east-playin-g8-b"
+                                        data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
+                                        aria-label="选择910胜者赢下东部8号种子争夺战"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
