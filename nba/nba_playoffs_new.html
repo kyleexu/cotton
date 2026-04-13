@@ -21,7 +21,8 @@
             --team-w: 120px;
             --conn-w: 28px;
             --round-w: 110px;
-            --gap-w: 6px;
+            --center-gap-w: 6px;
+            --outer-gap-w: 18px;
             --champ-w: 140px;
         }
 
@@ -38,30 +39,9 @@
             line-height: 1.5;
         }
 
-        /* ── Header ── */
-        .page-header {
-            padding: 32px 32px 20px;
-            background: linear-gradient(135deg, #071525 0%, #0e2640 55%, #1a3a5c 100%);
-            text-align: center;
-            border-bottom: 1px solid rgba(31, 122, 140, 0.25);
-        }
-
-        .page-title {
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: .08em;
-            color: #e8f0fa;
-        }
-
-        .page-subtitle {
-            font-size: .86rem;
-            color: rgba(200, 220, 245, .6);
-            letter-spacing: .02em;
-        }
-
         /* ── Section container ── */
         .container {
-            padding: 16px 20px 32px;
+            padding: 28px 20px 32px;
         }
 
         section {
@@ -84,7 +64,7 @@
                 /* 2  wp-conn  */
                 var(--round-w)
                 /* 3  wp-result */
-                var(--gap-w)
+                var(--outer-gap-w)
                 /* 4  gap1 */
                 var(--team-w)
                 /* 5  wr1-team */
@@ -100,11 +80,11 @@
                 /* 10 wf-conn  */
                 var(--round-w)
                 /* 11 wf-champ */
-                var(--gap-w)
+                var(--center-gap-w)
                 /* 12 gap2 */
                 var(--champ-w)
                 /* 13 champ    */
-                var(--gap-w)
+                var(--center-gap-w)
                 /* 14 gap3 */
                 var(--round-w)
                 /* 15 ef-champ */
@@ -120,7 +100,7 @@
                 /* 20 er1-conn */
                 var(--team-w)
                 /* 21 er1-team */
-                var(--gap-w)
+                var(--outer-gap-w)
                 /* 22 gap4 */
                 var(--round-w)
                 /* 23 ep-result */
@@ -248,14 +228,14 @@
         .league-champion {
             padding: 14px 10px;
             border-radius: 10px;
-            width: calc(var(--round-w) * 2 + var(--gap-w));
-            max-width: calc(var(--round-w) * 2 + var(--gap-w));
+            width: calc(var(--round-w) * 2 + var(--center-gap-w));
+            max-width: calc(var(--round-w) * 2 + var(--center-gap-w));
             min-height: 148px;
         }
 
         .league-champion .team-logo {
-            width: 68px;
-            height: 68px;
+            width: 96px;
+            height: 96px;
         }
 
         .league-champion .team-name {
@@ -373,11 +353,6 @@
 </head>
 
 <body>
-    <header class="page-header">
-        <h1 class="page-title">NBA 季后赛对战图</h1>
-        <p class="page-subtitle">2025&ndash;26 赛季 &middot; 点击队名选择晋级球队</p>
-    </header>
-
     <main class="container">
         <section>
             <div class="bracket-grid" id="bracket-grid">
