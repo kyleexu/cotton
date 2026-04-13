@@ -105,7 +105,7 @@
 
         .conference-grid {
             display: grid;
-            grid-template-columns: max-content max-content max-content;
+            grid-template-columns: max-content max-content max-content max-content;
             gap: 20px;
             align-items: start;
             width: max-content;
@@ -320,8 +320,9 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <div class="team-card selectable-option is-selected" data-playin-game="g78"
-                                        data-team="suns" tabindex="0" role="button" aria-label="选择太阳赢下西部7/8附加赛">
+                                    <div class="team-card selectable-option is-selected" data-playin-conf="west"
+                                        data-playin-game="g78" data-team="suns" tabindex="0" role="button"
+                                        aria-label="选择太阳赢下西部7/8附加赛">
                                         <strong class="team-line"><img class="team-logo"
                                                 src="https://cdn.nba.com/logos/nba/1610612756/global/L/logo.svg"
                                                 alt="太阳 logo" /><span class="team-name">太阳</span></strong><span
@@ -337,8 +338,9 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="team-card selectable-option" data-playin-game="g78" data-team="blazers"
-                                        tabindex="0" role="button" aria-label="选择开拓者赢下西部7/8附加赛">
+                                    <div class="team-card selectable-option" data-playin-conf="west"
+                                        data-playin-game="g78" data-team="blazers" tabindex="0" role="button"
+                                        aria-label="选择开拓者赢下西部7/8附加赛">
                                         <strong class="team-line"><img class="team-logo"
                                                 src="https://cdn.nba.com/logos/nba/1610612757/global/L/logo.svg"
                                                 alt="开拓者 logo" /><span class="team-name">开拓者</span></strong><span
@@ -350,8 +352,9 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="team-card selectable-option is-selected" data-playin-game="g910"
-                                        data-team="clippers" tabindex="0" role="button" aria-label="选择快船赢下西部9/10附加赛">
+                                    <div class="team-card selectable-option is-selected" data-playin-conf="west"
+                                        data-playin-game="g910" data-team="clippers" tabindex="0" role="button"
+                                        aria-label="选择快船赢下西部9/10附加赛">
                                         <strong class="team-line"><img class="team-logo"
                                                 src="https://cdn.nba.com/logos/nba/1610612746/global/L/logo.svg"
                                                 alt="快船 logo" /><span class="team-name">快船</span></strong><span
@@ -367,8 +370,9 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="team-card selectable-option" data-playin-game="g910"
-                                        data-team="warriors" tabindex="0" role="button" aria-label="选择勇士赢下西部9/10附加赛">
+                                    <div class="team-card selectable-option" data-playin-conf="west"
+                                        data-playin-game="g910" data-team="warriors" tabindex="0" role="button"
+                                        aria-label="选择勇士赢下西部9/10附加赛">
                                         <strong class="team-line"><img class="team-logo"
                                                 src="https://cdn.nba.com/logos/nba/1610612744/global/L/logo.svg"
                                                 alt="勇士 logo" /><span class="team-name">勇士</span></strong><span
@@ -380,8 +384,9 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="team-card selectable-option" id="west-playin-g8-a" data-playin-game="g8"
-                                        tabindex="0" role="button" aria-label="选择78败者赢下8号种子争夺战"></div>
+                                    <div class="team-card selectable-option" id="west-playin-g8-a"
+                                        data-playin-conf="west" data-playin-game="g8" tabindex="0" role="button"
+                                        aria-label="选择78败者赢下8号种子争夺战"></div>
                                 </td>
                                 <td class="playin-arrow-cell" rowspan="2">→</td>
                                 <td rowspan="2">
@@ -392,8 +397,9 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="team-card selectable-option" id="west-playin-g8-b" data-playin-game="g8"
-                                        tabindex="0" role="button" aria-label="选择910胜者赢下8号种子争夺战"></div>
+                                    <div class="team-card selectable-option" id="west-playin-g8-b"
+                                        data-playin-conf="west" data-playin-game="g8" tabindex="0" role="button"
+                                        aria-label="选择910胜者赢下8号种子争夺战"></div>
                                 </td>
                             </tr>
                         </tbody>
@@ -619,10 +625,8 @@
                                     <tr>
                                         <td>
                                             <div class="team-card selectable-option" data-conf="east" data-match="m1"
-                                                data-team="eastSeed8" tabindex="0" role="button"
-                                                aria-label="选择8号种子为东部首轮胜者"><strong><span
-                                                        class="team-name">76人/魔术<br />黄蜂/热火</span></strong><span
-                                                    class="seed">7/8/9/10名争8号种子</span></div>
+                                                data-team="eastPlayin8" id="east-seed8-card" tabindex="0" role="button"
+                                                aria-label="选择8号种子为东部首轮胜者"></div>
                                         </td>
                                     </tr>
                                     <tr>
@@ -649,7 +653,8 @@
                                                 <strong class="team-line"><img class="team-logo"
                                                         src="https://cdn.nba.com/logos/nba/1610612761/global/L/logo.svg"
                                                         alt="猛龙 logo" /><span class="team-name">猛龙</span></strong><span
-                                                    class="seed">5号种子</span></div>
+                                                    class="seed">5号种子</span>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr>
@@ -679,10 +684,8 @@
                                     <tr>
                                         <td>
                                             <div class="team-card selectable-option" data-conf="east" data-match="m2"
-                                                data-team="eastSeed7" tabindex="0" role="button"
-                                                aria-label="选择7号种子为东部首轮胜者"><strong><span
-                                                        class="team-name">76人/魔术</span></strong><span
-                                                    class="seed">7/8名争7号种子</span></div>
+                                                data-team="eastPlayin7" id="east-seed7-card" tabindex="0" role="button"
+                                                aria-label="选择7号种子为东部首轮胜者"></div>
                                         </td>
                                     </tr>
                                     <tr>
@@ -710,7 +713,109 @@
                                                 <strong class="team-line"><img class="team-logo"
                                                         src="https://cdn.nba.com/logos/nba/1610612737/global/L/logo.svg"
                                                         alt="老鹰 logo" /><span class="team-name">老鹰</span></strong><span
-                                                    class="seed">6号种子</span></div>
+                                                    class="seed">6号种子</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="playin-panel">
+                            <p class="conference-title">东部附加赛</p>
+                            <table class="playin-table" aria-label="东部附加赛树状图">
+                                <thead>
+                                    <tr>
+                                        <th>晋级结果</th>
+                                        <th></th>
+                                        <th>比赛结果</th>
+                                        <th></th>
+                                        <th>附加赛对阵</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td class="playin-arrow-cell"></td>
+                                        <td rowspan="2">
+                                            <div class="win-card" id="east-playin-seed7"></div>
+                                        </td>
+                                        <td class="playin-arrow-cell" rowspan="2">←</td>
+                                        <td>
+                                            <div class="team-card selectable-option is-selected" data-playin-conf="east"
+                                                data-playin-game="g78" data-team="sixers" tabindex="0" role="button"
+                                                aria-label="选择76人赢下东部7/8附加赛">
+                                                <strong class="team-line"><img class="team-logo"
+                                                        src="https://cdn.nba.com/logos/nba/1610612755/global/L/logo.svg"
+                                                        alt="76人 logo" /><span
+                                                        class="team-name">76人</span></strong><span
+                                                    class="seed">7名</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td class="playin-arrow-cell"></td>
+                                        <td>
+                                            <div class="team-card selectable-option" data-playin-conf="east"
+                                                data-playin-game="g78" data-team="magic" tabindex="0" role="button"
+                                                aria-label="选择魔术赢下东部7/8附加赛">
+                                                <strong class="team-line"><img class="team-logo"
+                                                        src="https://cdn.nba.com/logos/nba/1610612753/global/L/logo.svg"
+                                                        alt="魔术 logo" /><span class="team-name">魔术</span></strong><span
+                                                    class="seed">8名</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td class="playin-arrow-cell"></td>
+                                        <td rowspan="2">
+                                            <div class="win-card" id="east-playin-g910"></div>
+                                        </td>
+                                        <td class="playin-arrow-cell" rowspan="2">←</td>
+                                        <td>
+                                            <div class="team-card selectable-option is-selected" data-playin-conf="east"
+                                                data-playin-game="g910" data-team="hornets" tabindex="0" role="button"
+                                                aria-label="选择黄蜂赢下东部9/10附加赛">
+                                                <strong class="team-line"><img class="team-logo"
+                                                        src="https://cdn.nba.com/logos/nba/1610612766/global/L/logo.svg"
+                                                        alt="黄蜂 logo" /><span class="team-name">黄蜂</span></strong><span
+                                                    class="seed">9名</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td class="playin-arrow-cell"></td>
+                                        <td>
+                                            <div class="team-card selectable-option" data-playin-conf="east"
+                                                data-playin-game="g910" data-team="heat" tabindex="0" role="button"
+                                                aria-label="选择热火赢下东部9/10附加赛">
+                                                <strong class="team-line"><img class="team-logo"
+                                                        src="https://cdn.nba.com/logos/nba/1610612748/global/L/logo.svg"
+                                                        alt="热火 logo" /><span class="team-name">热火</span></strong><span
+                                                    class="seed">10名</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2"><span class="seed">8号种子进入首轮</span></td>
+                                        <td class="playin-arrow-cell" rowspan="2">←</td>
+                                        <td rowspan="2">
+                                            <div class="win-card" id="east-playin-seed8"></div>
+                                        </td>
+                                        <td class="playin-arrow-cell" rowspan="2">←</td>
+                                        <td>
+                                            <div class="team-card selectable-option" id="east-playin-g8-a"
+                                                data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
+                                                aria-label="选择78败者赢下东部8号种子争夺战"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="team-card selectable-option" id="east-playin-g8-b"
+                                                data-playin-conf="east" data-playin-game="g8" tabindex="0" role="button"
+                                                aria-label="选择910胜者赢下东部8号种子争夺战"></div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -736,8 +841,10 @@
             warriors: { name: '勇士', logo: 'https://cdn.nba.com/logos/nba/1610612744/global/L/logo.svg' },
             pistons: { name: '活塞', logo: 'https://cdn.nba.com/logos/nba/1610612765/global/L/logo.svg' },
             celtics: { name: '凯尔特人', logo: 'https://cdn.nba.com/logos/nba/1610612738/global/L/logo.svg' },
-            eastSeed8: { name: '76人/魔术/黄蜂/热火', logo: '' },
-            eastSeed7: { name: '76人/魔术', logo: '' },
+            sixers: { name: '76人', logo: 'https://cdn.nba.com/logos/nba/1610612755/global/L/logo.svg' },
+            magic: { name: '魔术', logo: 'https://cdn.nba.com/logos/nba/1610612753/global/L/logo.svg' },
+            hornets: { name: '黄蜂', logo: 'https://cdn.nba.com/logos/nba/1610612766/global/L/logo.svg' },
+            heat: { name: '热火', logo: 'https://cdn.nba.com/logos/nba/1610612748/global/L/logo.svg' },
             knicks: { name: '尼克斯', logo: 'https://cdn.nba.com/logos/nba/1610612752/global/L/logo.svg' },
             hawks: { name: '老鹰', logo: 'https://cdn.nba.com/logos/nba/1610612737/global/L/logo.svg' },
             cavaliers: { name: '骑士', logo: 'https://cdn.nba.com/logos/nba/1610612739/global/L/logo.svg' },
@@ -773,6 +880,12 @@
             g8Winner: 'clippers'
         };
 
+        const eastPlayIn = {
+            g78Winner: 'sixers',
+            g910Winner: 'hornets',
+            g8Winner: 'hornets'
+        };
+
         const leagueState = {
             champion: null
         };
@@ -788,6 +901,8 @@
         function resolveTeam(teamKey) {
             if (teamKey === 'westPlayin7') return teams[westPlayIn.g78Winner];
             if (teamKey === 'westPlayin8') return teams[westPlayIn.g8Winner];
+            if (teamKey === 'eastPlayin7') return teams[eastPlayIn.g78Winner];
+            if (teamKey === 'eastPlayin8') return teams[eastPlayIn.g8Winner];
             return teams[teamKey];
         }
 
@@ -829,14 +944,58 @@
             document.getElementById('west-seed7-card').innerHTML = teamCardMarkup('westPlayin7', '7号种子', '附加赛晋级7号种子');
             document.getElementById('west-seed8-card').innerHTML = teamCardMarkup('westPlayin8', '8号种子', '附加赛晋级8号种子');
 
-            document.querySelectorAll('[data-playin-game="g78"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g78"]').forEach((el) => {
                 el.classList.toggle('is-selected', westPlayIn.g78Winner === el.dataset.team);
             });
-            document.querySelectorAll('[data-playin-game="g910"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g910"]').forEach((el) => {
                 el.classList.toggle('is-selected', westPlayIn.g910Winner === el.dataset.team);
             });
-            document.querySelectorAll('[data-playin-game="g8"]').forEach((el) => {
+            document.querySelectorAll('[data-playin-conf="west"][data-playin-game="g8"]').forEach((el) => {
                 el.classList.toggle('is-selected', westPlayIn.g8Winner === el.dataset.team);
+            });
+        }
+
+        function getEastPlayInLoser() {
+            return eastPlayIn.g78Winner === 'sixers' ? 'magic' : 'sixers';
+        }
+
+        function getEastPlayInSeed8Candidates() {
+            return [getEastPlayInLoser(), eastPlayIn.g910Winner];
+        }
+
+        function normalizeEastPlayIn() {
+            const candidates = getEastPlayInSeed8Candidates();
+            if (!candidates.includes(eastPlayIn.g8Winner)) {
+                eastPlayIn.g8Winner = candidates[1] || candidates[0] || null;
+            }
+        }
+
+        function renderEastPlayIn() {
+            const loser78 = getEastPlayInLoser();
+            const [game8Left, game8Right] = getEastPlayInSeed8Candidates();
+
+            document.getElementById('east-playin-seed7').innerHTML = teamCardMarkup(eastPlayIn.g78Winner, '7号种子', '7号种子');
+            document.getElementById('east-playin-g910').innerHTML = teamCardMarkup(eastPlayIn.g910Winner, '9/10胜者', '9/10胜者');
+            document.getElementById('east-playin-seed8').innerHTML = teamCardMarkup(eastPlayIn.g8Winner, '8号种子', '8号种子');
+
+            const game8OptionA = document.getElementById('east-playin-g8-a');
+            const game8OptionB = document.getElementById('east-playin-g8-b');
+            game8OptionA.dataset.team = game8Left;
+            game8OptionB.dataset.team = game8Right;
+            game8OptionA.innerHTML = teamCardMarkup(game8Left, '78败者', game8Left === loser78 ? '78败者' : '候选');
+            game8OptionB.innerHTML = teamCardMarkup(game8Right, '9/10胜者', game8Right === eastPlayIn.g910Winner ? '9/10胜者' : '候选');
+
+            document.getElementById('east-seed7-card').innerHTML = teamCardMarkup('eastPlayin7', '7号种子', '附加赛晋级7号种子');
+            document.getElementById('east-seed8-card').innerHTML = teamCardMarkup('eastPlayin8', '8号种子', '附加赛晋级8号种子');
+
+            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g78"]').forEach((el) => {
+                el.classList.toggle('is-selected', eastPlayIn.g78Winner === el.dataset.team);
+            });
+            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g910"]').forEach((el) => {
+                el.classList.toggle('is-selected', eastPlayIn.g910Winner === el.dataset.team);
+            });
+            document.querySelectorAll('[data-playin-conf="east"][data-playin-game="g8"]').forEach((el) => {
+                el.classList.toggle('is-selected', eastPlayIn.g8Winner === el.dataset.team);
             });
         }
 
@@ -880,6 +1039,7 @@
         function normalizeConference(conf) {
             const { state, groups } = brackets[conf];
             if (conf === 'west') normalizeWestPlayIn();
+            if (conf === 'east') normalizeEastPlayIn();
 
             const semiOneCandidates = groups.s1.map((k) => state[k]);
             const semiTwoCandidates = groups.s2.map((k) => state[k]);
@@ -890,19 +1050,31 @@
             normalizeLeagueChampion();
         }
 
-        document.querySelectorAll('[data-playin-game]').forEach((el) => {
+        document.querySelectorAll('[data-playin-conf][data-playin-game]').forEach((el) => {
             const choose = () => {
+                const conf = el.dataset.playinConf;
                 const game = el.dataset.playinGame;
                 const team = el.dataset.team;
                 if (!team) return;
 
-                if (game === 'g78') westPlayIn.g78Winner = team;
-                if (game === 'g910') westPlayIn.g910Winner = team;
-                if (game === 'g8') westPlayIn.g8Winner = team;
+                if (conf === 'west') {
+                    if (game === 'g78') westPlayIn.g78Winner = team;
+                    if (game === 'g910') westPlayIn.g910Winner = team;
+                    if (game === 'g8') westPlayIn.g8Winner = team;
+                    normalizeConference('west');
+                    renderWestPlayIn();
+                    renderConference('west');
+                }
 
-                normalizeConference('west');
-                renderWestPlayIn();
-                renderConference('west');
+                if (conf === 'east') {
+                    if (game === 'g78') eastPlayIn.g78Winner = team;
+                    if (game === 'g910') eastPlayIn.g910Winner = team;
+                    if (game === 'g8') eastPlayIn.g8Winner = team;
+                    normalizeConference('east');
+                    renderEastPlayIn();
+                    renderConference('east');
+                }
+
                 renderLeagueChampion();
             };
 
@@ -976,13 +1148,11 @@
         });
 
         renderWestPlayIn();
+        renderEastPlayIn();
         renderConference('west');
         renderConference('east');
         renderLeagueChampion();
     </script>
-    +
 </body>
-+
-+
 
 </html>
