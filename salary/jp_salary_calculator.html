@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本薪资方案计算器</title>
+    <style>
+        :root {
+            --bg: #f3f4f6;
+            --card: #fff;
+            --line: #e5e7eb;
+            --text: #111827;
+            --muted: #6b7280;
+            --accent: #bc002d;
+            --net: #15803d;
+            --tax: #b91c1c;
+            --soft: #f9fafb;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            color: var(--text);
+            background: var(--bg);
+            font: 14px/1.5 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+        }
+
+        .top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 52px;
+            padding: 0 20px;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 650;
+        }
+
+        .top a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .top a:hover { color: var(--accent); }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-h {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--line);
+            font-weight: 650;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .card-h span {
+            font-weight: 400;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .card-b { padding: 16px 18px; }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .kpi {
+            background: var(--soft);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .kpi.primary {
+            background: linear-gradient(135deg, #bc002d 0%, #7f001e 100%);
+            color: #fff;
+        }
+
+        .kpi .k {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .kpi.primary .k { color: rgba(255,255,255,.82); }
+
+        .kpi .v {
+            font-size: 22px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .kpi .s {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .kpi.primary .s { color: rgba(255,255,255,.78); }
+        .kpi .v.net { color: var(--net); }
+        .kpi .v.tax { color: var(--tax); }
+        .kpi.primary .v { color: #fff; }
+
+        .fields {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .field input[type="number"],
+        .field input[type="text"],
+        .field select {
+            width: 100%;
+            height: 36px;
+            padding: 0 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-variant-numeric: tabular-nums;
+            background: #fff;
+        }
+
+        .field input.money {
+            text-align: right;
+            letter-spacing: 0.02em;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .field .hint {
+            margin-top: 4px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .seg {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            background: #f3f4f6;
+            padding: 3px;
+            border-radius: 8px;
+        }
+
+        .seg label {
+            margin: 0;
+            text-align: center;
+            padding: 8px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .seg input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .seg label:has(input:checked) {
+            background: #fff;
+            color: var(--accent);
+            font-weight: 650;
+            box-shadow: 0 1px 2px rgba(0,0,0,.06);
+        }
+
+        details.advanced {
+            margin-top: 14px;
+            border-top: 1px dashed var(--line);
+            padding-top: 12px;
+        }
+
+        details.advanced summary {
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 650;
+            user-select: none;
+        }
+
+        details.advanced[open] summary { margin-bottom: 12px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-variant-numeric: tabular-nums;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--line);
+            text-align: right;
+        }
+
+        th:first-child, td:first-child { text-align: left; color: var(--muted); }
+        th {
+            background: var(--soft);
+            color: var(--muted);
+            font-weight: 650;
+            text-align: left;
+        }
+
+        tr.total td {
+            font-weight: 700;
+            background: var(--soft);
+            border-bottom: 0;
+        }
+
+        td.pay { color: var(--text); font-weight: 650; }
+        td.deduct { color: var(--tax); }
+        td.net { color: var(--net); font-weight: 700; }
+
+        .flow {
+            display: grid;
+            gap: 0;
+        }
+
+        .flow-row {
+            display: grid;
+            grid-template-columns: 28px 1fr auto;
+            gap: 10px;
+            align-items: start;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .flow-row:last-child { border-bottom: 0; }
+
+        .step {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: var(--accent);
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .flow-row strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .flow-row small {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .flow-row .amt {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .note {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .note p { margin: 0 0 8px; }
+        .note p:last-child { margin: 0; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #fef2f2;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        @media (max-width: 900px) {
+            .grid-4, .grid-3, .fields, .grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 560px) {
+            .grid-4, .grid-3, .fields, .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="top">
+        <h1>日本薪资方案计算器</h1>
+        <a href="../index.html">返回入口</a>
+    </header>
+
+    <div class="wrap">
+        <!-- 输入 -->
+        <section class="card">
+            <div class="card-h">
+                输入条件
+                <span>按日本公司员常见方式：月薪天引き + 赏与天引き + 年末调整精算 + 住民税特别征收</span>
+            </div>
+            <div class="card-b">
+                <div class="fields">
+                    <div class="field">
+                        <label for="region">工作地（协会けんぽ）</label>
+                        <select id="region" onchange="onRegionChange()"></select>
+                        <div class="hint" id="regionHint">健康保险费率随都道府县变化</div>
+                    </div>
+                    <div class="field">
+                        <label for="monthlySalary">月薪额面（円）</label>
+                        <input class="money" type="text" inputmode="numeric" id="monthlySalary" value="700,000" data-money>
+                        <div class="hint">基本给等，不含通勤津贴</div>
+                    </div>
+                    <div class="field">
+                        <label for="bonusAnnual">赏与年额（円）</label>
+                        <input class="money" type="text" inputmode="numeric" id="bonusAnnual" value="0" data-money>
+                        <div class="hint">夏奖+冬奖合计</div>
+                    </div>
+                    <div class="field">
+                        <label for="commute">通勤津贴 / 月（円）</label>
+                        <input class="money" type="text" inputmode="numeric" id="commute" value="20,000" data-money>
+                        <div class="hint">雇用保险计入；所得税侧按非课税处理</div>
+                    </div>
+                    <div class="field">
+                        <label>介护保险（40–64岁）</label>
+                        <div class="seg">
+                            <label>
+                                <input type="radio" name="careAge" value="0" checked onchange="calculate()">
+                                否
+                            </label>
+                            <label>
+                                <input type="radio" name="careAge" value="1" onchange="calculate()">
+                                是
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="dependents">控除对象扶养亲属</label>
+                        <input type="number" id="dependents" value="1" min="0" step="1" oninput="calculate()">
+                        <div class="hint">一般扶养概算（所得税 38万 / 住民税 33万）</div>
+                    </div>
+                    <div class="field">
+                        <label for="prevIncome">前年给与收入（円）</label>
+                        <input class="money" type="text" inputmode="numeric" id="prevIncome" value="8,000,000" data-money>
+                        <div class="hint">用于估算<strong>今年</strong>特别征收的住民税</div>
+                    </div>
+                </div>
+
+                <details class="advanced">
+                    <summary>高级：保险费率 / 标准报酬上限（选地区后会自动填健保费率，仍可手改）</summary>
+                    <div class="fields">
+                        <div class="field">
+                            <label for="healthRate">健康保险 本人%</label>
+                            <input type="number" id="healthRate" value="4.955" step="0.001" oninput="onManualRateChange()">
+                        </div>
+                        <div class="field">
+                            <label for="careRate">介护保险 本人%</label>
+                            <input type="number" id="careRate" value="0.795" step="0.001" oninput="calculate()">
+                        </div>
+                        <div class="field">
+                            <label for="pensionRate">厚生年金 本人%</label>
+                            <input type="number" id="pensionRate" value="9.15" step="0.01" oninput="calculate()">
+                        </div>
+                        <div class="field">
+                            <label for="employRate">雇用保险 本人%</label>
+                            <input type="number" id="employRate" value="0.55" step="0.01" oninput="calculate()">
+                        </div>
+                        <div class="field">
+                            <label for="pensionCap">年金标准报酬上限</label>
+                            <input class="money" type="text" inputmode="numeric" id="pensionCap" value="650,000" data-money>
+                        </div>
+                        <div class="field">
+                            <label for="healthCap">健保标准报酬上限</label>
+                            <input class="money" type="text" inputmode="numeric" id="healthCap" value="1,390,000" data-money>
+                        </div>
+                        <div class="field">
+                            <label for="companyHealthRate">健保 企业%</label>
+                            <input type="number" id="companyHealthRate" value="4.955" step="0.001" oninput="onManualRateChange()">
+                        </div>
+                        <div class="field">
+                            <label for="companyCareRate">介护 企业%</label>
+                            <input type="number" id="companyCareRate" value="0.795" step="0.001" oninput="calculate()">
+                        </div>
+                        <div class="field">
+                            <label for="companyPensionRate">年金 企业%</label>
+                            <input type="number" id="companyPensionRate" value="9.15" step="0.01" oninput="calculate()">
+                        </div>
+                        <div class="field">
+                            <label for="companyEmployRate">雇用 企业%</label>
+                            <input type="number" id="companyEmployRate" value="0.90" step="0.01" oninput="calculate()">
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- 汇总 -->
+        <section class="grid-4" id="summary">
+            <div class="kpi primary">
+                <div class="k">手取り年収（概算）</div>
+                <div class="v" id="kpiNetAnnual">0</div>
+                <div class="s">到手率 <span id="kpiNetRate">0%</span></div>
+            </div>
+            <div class="kpi">
+                <div class="k">额面年収</div>
+                <div class="v" id="kpiGross">0</div>
+                <div class="s">月薪×12 + 赏与（不含通勤）</div>
+            </div>
+            <div class="kpi">
+                <div class="k">月手取り目安</div>
+                <div class="v net" id="kpiNetMonthly">0</div>
+                <div class="s">含特别征收住民税后的月差引</div>
+            </div>
+            <div class="kpi">
+                <div class="k">企业用人成本（年）</div>
+                <div class="v" id="kpiCompany">0</div>
+                <div class="s">额面 + 通勤 + 企业社保</div>
+            </div>
+        </section>
+
+        <!-- 两种现金流 -->
+        <section class="grid-2">
+            <div class="card">
+                <div class="card-h">
+                    每月工资明细（イメージ）
+                    <span>会社员工资条常见结构</span>
+                </div>
+                <div class="card-b" style="padding-top:0;">
+                    <table>
+                        <thead>
+                            <tr><th>项目</th><th style="text-align:right">金额</th></tr>
+                        </thead>
+                        <tbody id="payslipMonth"></tbody>
+                    </table>
+                    <p class="note" style="margin-top:12px">
+                        源泉所得税：实务用「源泉徴収税額表」按月预扣，年末调整精算。本页用<strong>本年所得税年额 ÷ 12</strong>作月预扣概算。<br>
+                        住民税：按<strong>前年所得</strong>，通常 6月–翌年5月从工资特别征收（赏与一般不再扣住民税）。
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-h">
+                    赏与明细（年合计 イメージ）
+                    <span>奖金发放时另算社保与源泉</span>
+                </div>
+                <div class="card-b" style="padding-top:0;">
+                    <table>
+                        <thead>
+                            <tr><th>项目</th><th style="text-align:right">金额</th></tr>
+                        </thead>
+                        <tbody id="payslipBonus"></tbody>
+                    </table>
+                    <p class="note" style="margin-top:12px">
+                        赏与的健康・年金按「标准赏与额」计；年金单次赏与有上限（本页按 150 万封顶简化）。雇用保险按赏与全额。住民税通常不在赏与扣除。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 年税结算 -->
+        <section class="card">
+            <div class="card-h">
+                本年所得税 · 年末调整逻辑
+                <span>給与所得控除 → 所得控除 → 課税所得 → 税额（含复兴特别所得税）</span>
+            </div>
+            <div class="card-b">
+                <div class="grid-2">
+                    <div class="flow" id="incomeTaxFlow"></div>
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>所得税分档</th>
+                                    <th>税率</th>
+                                    <th style="text-align:right">本档税额</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taxBrackets"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 住民税两段 -->
+        <section class="grid-2">
+            <div class="card">
+                <div class="card-h">
+                    今年住民税（特别征收）
+                    <span class="badge">按前年所得</span>
+                </div>
+                <div class="card-b" style="padding-top:0;">
+                    <table>
+                        <tbody id="residentThisYear"></tbody>
+                    </table>
+                    <p class="note" style="margin-top:12px">
+                        这是工资条里每月扣的住民税来源。入职第一年常较少/没有，因为没有「前年作为住民的所得」。
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-h">
+                    来年住民税見込み
+                    <span class="badge">按今年收入估算</span>
+                </div>
+                <div class="card-b" style="padding-top:0;">
+                    <table>
+                        <tbody id="residentNextYear"></tbody>
+                    </table>
+                    <p class="note" style="margin-top:12px">
+                        明年 6 月起特别征收的参考额。所得割标准 10%，均等割约 5,000（含森林环境税 1,000）。基础控除 43 万。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 全年汇总 -->
+        <section class="card">
+            <div class="card-h">
+                全年现金拆解
+                <span>按「今年实际从口袋进出」估算</span>
+            </div>
+            <div class="card-b" style="padding-top:0;">
+                <div class="grid-3" style="margin-bottom:14px;">
+                    <div class="kpi">
+                        <div class="k">本人社保合计</div>
+                        <div class="v" id="yearSocial">0</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="k">本年所得税</div>
+                        <div class="v tax" id="yearIncomeTax">0</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="k">今年住民税（特别征收）</div>
+                        <div class="v tax" id="yearResident">0</div>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>项目</th>
+                            <th style="text-align:right">月薪部分（×12）</th>
+                            <th style="text-align:right">赏与</th>
+                            <th style="text-align:right">年合计</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yearBreakdown"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-h">计算口径说明</div>
+            <div class="card-b note">
+                <p><strong>1. 社会保险：</strong>每月按标准报酬月额×费率从工资扣除；赏与另行计算。本页用月薪×费率并封顶，代替等级表，与实务可能差数百～数千円。</p>
+                <p><strong>2. 所得税：</strong>每月源泉徴収预扣，年末调整（或确定申告）按年精算。本页直接按年税法算出应纳所得税，再分摊到月/赏与，用于方案比较，不是税額表逐月查表。</p>
+                <p><strong>3. 住民税：</strong>赋课期为前年所得 → 次年 6 月起特别征收。手取り年収用「今年特别征收住民税」；另给「来年住民税見込み」方便看长期稳态。</p>
+                <p><strong>4. 未计入：</strong>生命保险/地震保险/住宅贷款/故乡纳税/配偶者控除细项、健保组合独自费率、儿童加算等。结果为概算。</p>
+                <p>参考：国税厅 No.1410 / No.1199 / No.2260；协会けんぽ；日本年金机构；厚劳省雇用保险费率；总务省个人住民税。</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const TAX_BRACKETS = [
+            [0, 1950000, 0.05, 0],
+            [1950000, 3300000, 0.10, 97500],
+            [3300000, 6950000, 0.20, 427500],
+            [6950000, 9000000, 0.23, 636000],
+            [9000000, 18000000, 0.33, 1536000],
+            [18000000, 40000000, 0.40, 2796000],
+            [40000000, Infinity, 0.45, 4796000]
+        ];
+
+        // 协会けんぽ 令和7年度 健康保险 总费率（劳使合计）；本人/企业各一半
+        // 介护保险全国一律 1.59%（本人 0.795%）
+        const REGIONS = [
+            { id: "tokyo", name: "东京", full: 9.91 },
+            { id: "kanagawa", name: "神奈川（横滨等）", full: 9.92 },
+            { id: "saitama", name: "埼玉", full: 9.76 },
+            { id: "chiba", name: "千叶", full: 9.79 },
+            { id: "osaka", name: "大阪", full: 10.24 },
+            { id: "hyogo", name: "兵库（神户等）", full: 10.16 },
+            { id: "kyoto", name: "京都", full: 10.03 },
+            { id: "aichi", name: "爱知（名古屋）", full: 10.03 },
+            { id: "fukuoka", name: "福冈", full: 10.31 },
+            { id: "hokkaido", name: "北海道（札幌等）", full: 10.31 },
+            { id: "okinawa", name: "冲绳", full: 9.44 },
+            { id: "custom", name: "自定义（用手改高级费率）", full: null }
+        ];
+
+        const CARE_FULL = 1.59;
+
+        const yen = (n) => Math.round(n).toLocaleString("zh-CN");
+        const pct = (r) => ((r || 0) * 100).toFixed(1) + "%";
+        const floorK = (n) => Math.floor(Math.max(0, n) / 1000) * 1000;
+        const trunc = (n) => Math.floor(n + 1e-9);
+
+        function parseMoneyValue(raw) {
+            if (raw == null) return 0;
+            const cleaned = String(raw).replace(/[^\d.-]/g, "");
+            if (!cleaned || cleaned === "-" || cleaned === ".") return 0;
+            const v = parseFloat(cleaned);
+            return Number.isFinite(v) ? v : 0;
+        }
+
+        function formatMoneyValue(n) {
+            const v = Math.round(Number(n) || 0);
+            return v.toLocaleString("en-US");
+        }
+
+        function money(id) {
+            return Math.max(0, parseMoneyValue(document.getElementById(id).value));
+        }
+
+        function moneyPos(id) {
+            const v = money(id);
+            return v > 0 ? v : 0;
+        }
+
+        function num0(id) {
+            const v = parseFloat(document.getElementById(id).value);
+            return Number.isFinite(v) && v >= 0 ? v : 0;
+        }
+
+        function halfRate(full) {
+            return Math.round((full / 2) * 1000) / 1000;
+        }
+
+        function fillRegionSelect() {
+            const sel = document.getElementById("region");
+            sel.innerHTML = REGIONS.map((r) =>
+                `<option value="${r.id}">${r.name}${r.full != null ? ` · 健保 ${r.full}%` : ""}</option>`
+            ).join("");
+            sel.value = "osaka";
+        }
+
+        function applyRegionRates(regionId, { recalculate = true } = {}) {
+            const region = REGIONS.find((r) => r.id === regionId) || REGIONS[0];
+            const hint = document.getElementById("regionHint");
+            if (region.full == null) {
+                hint.textContent = "自定义：请在下方高级设置中填写健保费率";
+                if (recalculate) calculate();
+                return;
+            }
+            const half = halfRate(region.full);
+            const careHalf = halfRate(CARE_FULL);
+            document.getElementById("healthRate").value = half.toFixed(3);
+            document.getElementById("companyHealthRate").value = half.toFixed(3);
+            document.getElementById("careRate").value = careHalf.toFixed(3);
+            document.getElementById("companyCareRate").value = careHalf.toFixed(3);
+            hint.textContent = `${region.name}：健保合计 ${region.full}%（劳使各 ${half}%）· 介护合计 ${CARE_FULL}%（劳使各 ${careHalf}%）· 令和7年协会けんぽ`;
+            if (recalculate) calculate();
+        }
+
+        function onRegionChange() {
+            applyRegionRates(document.getElementById("region").value);
+        }
+
+        function onManualRateChange() {
+            document.getElementById("region").value = "custom";
+            document.getElementById("regionHint").textContent = "已改为自定义费率";
+            calculate();
+        }
+
+        function bindMoneyInputs() {
+            document.querySelectorAll("input[data-money]").forEach((input) => {
+                input.addEventListener("focus", () => {
+                    const v = parseMoneyValue(input.value);
+                    input.value = v ? String(Math.round(v)) : "";
+                    input.select();
+                });
+                input.addEventListener("blur", () => {
+                    input.value = formatMoneyValue(parseMoneyValue(input.value));
+                    calculate();
+                });
+                input.addEventListener("input", () => {
+                    // 输入过程中允许数字与逗号；失焦再规范格式
+                    calculate();
+                });
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        input.blur();
+                    }
+                });
+            });
+        }
+
+        function salaryDeduction(gross) {
+            if (gross <= 1900000) return 650000;
+            if (gross <= 3600000) return gross * 0.3 + 80000;
+            if (gross <= 6600000) return gross * 0.2 + 440000;
+            if (gross <= 8500000) return gross * 0.1 + 1100000;
+            return 1950000;
+        }
+
+        function basicDeductionIT(income) {
+            if (income <= 1320000) return 950000;
+            if (income <= 3360000) return 880000;
+            if (income <= 4890000) return 680000;
+            if (income <= 6550000) return 630000;
+            if (income <= 23500000) return 580000;
+            if (income <= 24000000) return 480000;
+            if (income <= 24500000) return 320000;
+            if (income <= 25000000) return 160000;
+            return 0;
+        }
+
+        function basicDeductionRT(income) {
+            if (income <= 24000000) return 430000;
+            if (income <= 24500000) return 290000;
+            if (income <= 25000000) return 150000;
+            return 0;
+        }
+
+        function incomeTaxOf(taxableRaw) {
+            const a = floorK(taxableRaw);
+            if (a <= 0) return { taxable: 0, base: 0, reconstruction: 0, total: 0 };
+            for (const [lo, hi, rate, quick] of TAX_BRACKETS) {
+                if (a > lo && a <= hi) {
+                    const base = trunc(a * rate - quick);
+                    const reconstruction = trunc(base * 0.021);
+                    return { taxable: a, base, reconstruction, total: base + reconstruction };
+                }
+            }
+            const base = trunc(a * 0.45 - 4796000);
+            const reconstruction = trunc(base * 0.021);
+            return { taxable: a, base, reconstruction, total: base + reconstruction };
+        }
+
+        function socialMonth(salary, commute, rates, caps, careOn) {
+            const hb = Math.min(salary, caps.health);
+            const pb = Math.min(salary, caps.pension);
+            const eb = salary + commute;
+            const health = trunc(hb * rates.health / 100);
+            const care = careOn ? trunc(hb * rates.care / 100) : 0;
+            const pension = trunc(pb * rates.pension / 100);
+            const employ = trunc(eb * rates.employ / 100);
+            const cHealth = trunc(hb * rates.cHealth / 100);
+            const cCare = careOn ? trunc(hb * rates.cCare / 100) : 0;
+            const cPension = trunc(pb * rates.cPension / 100);
+            const cEmploy = trunc(eb * rates.cEmploy / 100);
+            return {
+                health, care, pension, employ,
+                total: health + care + pension + employ,
+                company: cHealth + cCare + cPension + cEmploy
+            };
+        }
+
+        function socialBonus(bonus, rates, careOn) {
+            const hb = Math.min(bonus, 10000000);
+            const pb = Math.min(bonus, 1500000);
+            const health = trunc(hb * rates.health / 100);
+            const care = careOn ? trunc(hb * rates.care / 100) : 0;
+            const pension = trunc(pb * rates.pension / 100);
+            const employ = trunc(bonus * rates.employ / 100);
+            const cHealth = trunc(hb * rates.cHealth / 100);
+            const cCare = careOn ? trunc(hb * rates.cCare / 100) : 0;
+            const cPension = trunc(pb * rates.cPension / 100);
+            const cEmploy = trunc(bonus * rates.cEmploy / 100);
+            return {
+                health, care, pension, employ,
+                total: health + care + pension + employ,
+                company: cHealth + cCare + cPension + cEmploy
+            };
+        }
+
+        /** 由给与收入估算社保（稳态，用于前年住民税） */
+        function estimateSocialFromAnnual(gross, rates, caps, careOn) {
+            const monthly = gross / 12;
+            const m = socialMonth(monthly, 0, rates, caps, careOn);
+            return m.total * 12;
+        }
+
+        function residentTaxFromGross(gross, social, dependents) {
+            const salInc = Math.max(0, gross - salaryDeduction(gross));
+            const basic = basicDeductionRT(salInc);
+            const dep = dependents * 330000;
+            const taxable = floorK(salInc - social - basic - dep);
+            const incomeLevy = trunc(Math.max(0, taxable) * 0.1);
+            const equal = incomeLevy > 0 || taxable > 0 ? 5000 : 0;
+            return {
+                salaryIncome: salInc,
+                basic,
+                dep,
+                social,
+                taxable: Math.max(0, taxable),
+                incomeLevy,
+                equal,
+                total: incomeLevy + equal
+            };
+        }
+
+        function calculate() {
+            const monthlySalary = money("monthlySalary");
+            const bonusAnnual = money("bonusAnnual");
+            const commute = money("commute");
+            const dependents = Math.floor(num0("dependents"));
+            const prevIncome = money("prevIncome");
+            const careOn = document.querySelector('input[name="careAge"]:checked').value === "1";
+
+            const rates = {
+                health: num0("healthRate"),
+                care: num0("careRate"),
+                pension: num0("pensionRate"),
+                employ: num0("employRate"),
+                cHealth: num0("companyHealthRate"),
+                cCare: num0("companyCareRate"),
+                cPension: num0("companyPensionRate"),
+                cEmploy: num0("companyEmployRate")
+            };
+            const caps = {
+                health: moneyPos("healthCap") || Infinity,
+                pension: moneyPos("pensionCap") || Infinity
+            };
+
+            const monthSI = socialMonth(monthlySalary, commute, rates, caps, careOn);
+            const bonusSI = socialBonus(bonusAnnual, rates, careOn);
+
+            const annualGross = monthlySalary * 12 + bonusAnnual;
+            const annualSocial = monthSI.total * 12 + bonusSI.total;
+
+            // —— 本年所得税（年末调整）——
+            const salDed = salaryDeduction(annualGross);
+            const salInc = Math.max(0, annualGross - salDed);
+            const basicIT = basicDeductionIT(salInc);
+            const depIT = dependents * 380000;
+            const tax = incomeTaxOf(salInc - annualSocial - basicIT - depIT);
+
+            // —— 住民税：今年特别征收（前年） / 来年見込み（今年）——
+            const prevSocial = estimateSocialFromAnnual(prevIncome || annualGross, rates, caps, careOn);
+            const residentNow = residentTaxFromGross(prevIncome || annualGross, prevSocial, dependents);
+            const residentNext = residentTaxFromGross(annualGross, annualSocial, dependents);
+
+            // 月源泉概算：年税在月薪与赏与间按额面比例分摊
+            const incomeTaxMonthShare = annualGross > 0
+                ? trunc(tax.total * (monthlySalary * 12 / annualGross) / 12)
+                : 0;
+            const incomeTaxBonusShare = tax.total - incomeTaxMonthShare * 12;
+            const residentMonth = trunc(residentNow.total / 12);
+
+            const monthGrossPay = monthlySalary + commute;
+            const monthDeduct = monthSI.total + incomeTaxMonthShare + residentMonth;
+            const monthNet = monthGrossPay - monthDeduct;
+
+            const bonusNet = bonusAnnual - bonusSI.total - incomeTaxBonusShare;
+
+            // 手取り年収：12个月差引 + 赏与差引
+            // （所得税用本年应纳；住民税用今年特别征收）
+            const netAnnual = monthNet * 12 + Math.max(0, bonusNet);
+            const companyCost = annualGross + commute * 12 + monthSI.company * 12 + bonusSI.company;
+
+            document.getElementById("kpiNetAnnual").textContent = yen(netAnnual) + " 円";
+            document.getElementById("kpiNetRate").textContent = pct(annualGross > 0 ? netAnnual / annualGross : 0);
+            document.getElementById("kpiGross").textContent = yen(annualGross) + " 円";
+            document.getElementById("kpiNetMonthly").textContent = yen(monthNet) + " 円";
+            document.getElementById("kpiCompany").textContent = yen(companyCost) + " 円";
+
+            document.getElementById("payslipMonth").innerHTML = `
+                <tr><td>基本给（额面）</td><td class="pay">${yen(monthlySalary)}</td></tr>
+                <tr><td>通勤津贴（非课税概算）</td><td class="pay">${yen(commute)}</td></tr>
+                <tr class="total"><td>支給合計</td><td class="pay">${yen(monthGrossPay)}</td></tr>
+                <tr><td>健康保险</td><td class="deduct">−${yen(monthSI.health)}</td></tr>
+                <tr><td>介护保险</td><td class="deduct">−${yen(monthSI.care)}</td></tr>
+                <tr><td>厚生年金</td><td class="deduct">−${yen(monthSI.pension)}</td></tr>
+                <tr><td>雇用保险</td><td class="deduct">−${yen(monthSI.employ)}</td></tr>
+                <tr><td>源泉所得税（月预扣概算）</td><td class="deduct">−${yen(incomeTaxMonthShare)}</td></tr>
+                <tr><td>住民税（特别征收）</td><td class="deduct">−${yen(residentMonth)}</td></tr>
+                <tr class="total"><td>控除合計</td><td class="deduct">−${yen(monthDeduct)}</td></tr>
+                <tr class="total"><td>差引支給額</td><td class="net">${yen(monthNet)}</td></tr>
+            `;
+
+            document.getElementById("payslipBonus").innerHTML = bonusAnnual > 0 ? `
+                <tr><td>赏与额面（年合计）</td><td class="pay">${yen(bonusAnnual)}</td></tr>
+                <tr><td>健康保险</td><td class="deduct">−${yen(bonusSI.health)}</td></tr>
+                <tr><td>介护保险</td><td class="deduct">−${yen(bonusSI.care)}</td></tr>
+                <tr><td>厚生年金</td><td class="deduct">−${yen(bonusSI.pension)}</td></tr>
+                <tr><td>雇用保险</td><td class="deduct">−${yen(bonusSI.employ)}</td></tr>
+                <tr><td>源泉所得税（赏与分摊概算）</td><td class="deduct">−${yen(incomeTaxBonusShare)}</td></tr>
+                <tr><td>住民税</td><td>通常不从赏与扣除</td></tr>
+                <tr class="total"><td>差引支給額</td><td class="net">${yen(bonusNet)}</td></tr>
+            ` : `<tr><td colspan="2">未设置赏与</td></tr>`;
+
+            document.getElementById("incomeTaxFlow").innerHTML = `
+                <div class="flow-row"><div class="step">1</div><div><strong>给与收入（年）</strong><small>月薪×12 + 赏与</small></div><div class="amt">${yen(annualGross)}</div></div>
+                <div class="flow-row"><div class="step">2</div><div><strong>− 给与所得控除</strong><small>令和7年分</small></div><div class="amt">−${yen(salDed)}</div></div>
+                <div class="flow-row"><div class="step">3</div><div><strong>= 给与所得</strong><small></small></div><div class="amt">${yen(salInc)}</div></div>
+                <div class="flow-row"><div class="step">4</div><div><strong>− 社会保险料控除</strong><small>本人全年实缴概算</small></div><div class="amt">−${yen(annualSocial)}</div></div>
+                <div class="flow-row"><div class="step">5</div><div><strong>− 基础控除</strong><small>所得连动（令和7年）</small></div><div class="amt">−${yen(basicIT)}</div></div>
+                <div class="flow-row"><div class="step">6</div><div><strong>− 扶养控除</strong><small>一般扶养×人数</small></div><div class="amt">−${yen(depIT)}</div></div>
+                <div class="flow-row"><div class="step">7</div><div><strong>= 課税所得</strong><small>千円未満切弃</small></div><div class="amt">${yen(tax.taxable)}</div></div>
+                <div class="flow-row"><div class="step">8</div><div><strong>算出所得税</strong><small>累进税率</small></div><div class="amt">${yen(tax.base)}</div></div>
+                <div class="flow-row"><div class="step">9</div><div><strong>+ 复兴特别所得税</strong><small>×2.1%</small></div><div class="amt">${yen(tax.reconstruction)}</div></div>
+                <div class="flow-row"><div class="step">10</div><div><strong>年所得税合计</strong><small>月末调整目标额</small></div><div class="amt" style="color:var(--tax)">${yen(tax.total)}</div></div>
+            `;
+
+            const brackets = TAX_BRACKETS.map(([lo, hi, rate, quick], i) => {
+                const band = Math.max(0, Math.min(tax.taxable, hi) - lo);
+                return { i, lo, hi, rate, quick, band, tax: band * rate, on: band > 0 };
+            });
+            document.getElementById("taxBrackets").innerHTML = brackets.map((b) => `
+                <tr style="${b.on ? "" : "color:#c4c4c4"}">
+                    <td>${b.lo === 0 ? `≤${yen(b.hi)}` : (!isFinite(b.hi) ? `>${yen(b.lo)}` : `${yen(b.lo)}–${yen(b.hi)}`)}</td>
+                    <td>${(b.rate * 100).toFixed(0)}%</td>
+                    <td style="text-align:right">${yen(b.tax)}</td>
+                </tr>`).join("") + `
+                <tr class="total"><td colspan="2">复兴特别所得税</td><td style="text-align:right">${yen(tax.reconstruction)}</td></tr>
+                <tr class="total"><td colspan="2">合计</td><td style="text-align:right;color:var(--tax)">${yen(tax.total)}</td></tr>`;
+
+            const fillResident = (el, r, grossLabel, gross) => {
+                document.getElementById(el).innerHTML = `
+                    <tr><td>${grossLabel}</td><td>${yen(gross)}</td></tr>
+                    <tr><td>给与所得</td><td>${yen(r.salaryIncome)}</td></tr>
+                    <tr><td>− 社保控除（估算）</td><td>−${yen(r.social)}</td></tr>
+                    <tr><td>− 基础控除</td><td>−${yen(r.basic)}</td></tr>
+                    <tr><td>− 扶养控除</td><td>−${yen(r.dep)}</td></tr>
+                    <tr><td>課税所得</td><td>${yen(r.taxable)}</td></tr>
+                    <tr><td>所得割 10%</td><td class="deduct">${yen(r.incomeLevy)}</td></tr>
+                    <tr><td>均等割（含森林环境税）</td><td class="deduct">${yen(r.equal)}</td></tr>
+                    <tr class="total"><td>年税额</td><td class="deduct">${yen(r.total)}</td></tr>
+                    <tr><td>月特别征收目安</td><td>${yen(trunc(r.total / 12))}</td></tr>
+                `;
+            };
+            fillResident("residentThisYear", residentNow, "前年给与收入", prevIncome || annualGross);
+            fillResident("residentNextYear", residentNext, "今年给与收入", annualGross);
+
+            document.getElementById("yearSocial").textContent = yen(annualSocial) + " 円";
+            document.getElementById("yearIncomeTax").textContent = yen(tax.total) + " 円";
+            document.getElementById("yearResident").textContent = yen(residentNow.total) + " 円";
+
+            document.getElementById("yearBreakdown").innerHTML = `
+                <tr><td>额面</td><td>${yen(monthlySalary * 12)}</td><td>${yen(bonusAnnual)}</td><td>${yen(annualGross)}</td></tr>
+                <tr><td>健康保险</td><td>−${yen(monthSI.health * 12)}</td><td>−${yen(bonusSI.health)}</td><td>−${yen(monthSI.health * 12 + bonusSI.health)}</td></tr>
+                <tr><td>介护保险</td><td>−${yen(monthSI.care * 12)}</td><td>−${yen(bonusSI.care)}</td><td>−${yen(monthSI.care * 12 + bonusSI.care)}</td></tr>
+                <tr><td>厚生年金</td><td>−${yen(monthSI.pension * 12)}</td><td>−${yen(bonusSI.pension)}</td><td>−${yen(monthSI.pension * 12 + bonusSI.pension)}</td></tr>
+                <tr><td>雇用保险</td><td>−${yen(monthSI.employ * 12)}</td><td>−${yen(bonusSI.employ)}</td><td>−${yen(monthSI.employ * 12 + bonusSI.employ)}</td></tr>
+                <tr><td>所得税</td><td>−${yen(incomeTaxMonthShare * 12)}</td><td>−${yen(incomeTaxBonusShare)}</td><td>−${yen(tax.total)}</td></tr>
+                <tr><td>住民税（今年特别征收）</td><td>−${yen(residentMonth * 12)}</td><td>—</td><td>−${yen(residentNow.total)}</td></tr>
+                <tr class="total"><td>差引（到手）</td><td class="net">${yen(monthNet * 12)}</td><td class="net">${yen(Math.max(0, bonusNet))}</td><td class="net">${yen(netAnnual)}</td></tr>
+            `;
+        }
+
+        window.onload = function () {
+            fillRegionSelect();
+            bindMoneyInputs();
+            applyRegionRates("osaka", { recalculate: false });
+            calculate();
+        };
+    </script>
+</body>
+
+</html>

@@ -7,6 +7,7 @@
 ## 功能概览
 
 - 中国大陆薪资计算器
+- 日本薪资方案计算器（厚生年金 / 健康保险 / 雇用保险 / 所得税 / 住民税）
 - 香港薪资方案计算器
 - 新加坡薪资方案计算器
 - 美国薪资方案计算器
@@ -20,6 +21,7 @@
 ├── index.html
 └── salary/
     ├── salary_calculator.html
+    ├── jp_salary_calculator.html
     ├── hk_salary_calculator.html
     ├── sg_salary_calculator.html
     └── us_salary_calculator.html
