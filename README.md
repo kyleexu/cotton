@@ -19,12 +19,11 @@
 ```text
 .
 ├── index.html
-└── salary/
-    ├── salary_calculator.html
-    ├── jp_salary_calculator.html
-    ├── hk_salary_calculator.html
-    ├── sg_salary_calculator.html
-    └── us_salary_calculator.html
+├── salary_calculator.html
+├── jp_salary_calculator.html
+├── hk_salary_calculator.html
+├── sg_salary_calculator.html
+└── us_salary_calculator.html
 ```
 
 ## 本地运行
